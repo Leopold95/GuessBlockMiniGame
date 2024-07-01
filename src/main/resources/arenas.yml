@@ -1,0 +1,33 @@
+arenas:
+  1:
+    name: "A1"
+    center:
+      x: 0
+      y: 0
+      z: 0
+    spawn:
+      first:
+        x: 0
+        y: 0
+        z: 0
+      second:
+        x: 0
+        y: 0
+        z: 0
+    orientation: "ns"
+  2:
+    name: "A2"
+    center:
+      x: 0
+      y: 0
+      z: 0
+    spawn:
+      first:
+        x: 0
+        y: 0
+        z: 0
+      second:
+        x: 0
+        y: 0
+        z: 0
+    orientation: "ns"

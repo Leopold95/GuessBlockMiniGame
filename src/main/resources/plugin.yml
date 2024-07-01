@@ -1,0 +1,6 @@
+name: GuessBlockMiniGame
+version: '${version}'
+main: me.leopold95.guessblock.GuessBlock
+api-version: '1.20'
+authors: [Leopold95]
+website: https://www.ukr-minecraft-plugin.fun/
