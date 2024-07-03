@@ -1,6 +1,7 @@
 package me.leopold95.guessblock;
 
 import me.leopold95.guessblock.commands.GuessBlockCommand;
+import me.leopold95.guessblock.commands.GuessBlockTesting;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.Keys;
 import me.leopold95.guessblock.core.guessblock.Engine;
@@ -21,6 +22,9 @@ public final class GuessBlock extends JavaPlugin {
 
         getCommand(Commands.MG).setExecutor(new GuessBlockCommand());
         getCommand(Commands.MG).setTabCompleter(new GuessBlockCommand());
+
+        getCommand(Commands.MG_TESTING).setExecutor(new GuessBlockTesting(this));
+        getCommand(Commands.MG_TESTING).setTabCompleter(new GuessBlockTesting(this));
 
         engine.loadAllData();
     }

@@ -1,4 +1,13 @@
 bad-arena-load: "Щось сталося при парсингу(заватаженні) однієї з арен: %error%"
+only-for-players: "Ця команда тольки для гравців"
+
+called-for-minigame: "Введіть команду \%base% %first% або натисніть на це повідомлення."
+
+placeholders:
+  player: гравець
+
+commands:
+  bad-args: "Введіть \%base% <%first%> <%second%>"
 
 loading:
   arenas-begin: "Початок завантаження всіх арен..."

@@ -46,7 +46,7 @@ public class ArenasManager {
             try {
                 ArenaModel model = parseModel(ARENAS + "." + key);
                 arenas.add(model);
-                Debug.message("&cArena Loaded");
+                Debug.message(model.toString());
             }
             catch (Exception exp){
                 plugin.getLogger().log(Level.WARNING, Config.getMessage("bad-arena-load").replace("%error%", exp.getMessage()));
@@ -82,6 +82,11 @@ public class ArenasManager {
 
         return new ArenaModel(
             Config.getArenasConfig().getString(configPart + ".name"),
+            new Location(
+                    Bukkit.getWorld(Config.getString("arenas-world")),
+                    Config.getArenasConfig().getInt(configPart + ".enemy-block-loc.x"),
+                    Config.getArenasConfig().getInt(configPart + ".enemy-block-loc.y"),
+                    Config.getArenasConfig().getInt(configPart + ".enemy-block-loc.z")),
             center,
             false,
             loadReplaceBlocks(center, nsORwe + ".first-part"),

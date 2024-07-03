@@ -1,19 +1,23 @@
 arenas:
   1:
     name: "A1"
+    enemy-block-loc:
+      x: 0
+      y: 0
+      z: 0
     center:
       x: 0
       y: 0
       z: 0
     spawn:
       first:
-        x: 0
-        y: 0
-        z: 0
+        x: 1
+        y: 3
+        z: 5
       second:
-        x: 0
-        y: 0
-        z: 0
+        x: -1
+        y: -3
+        z: -5
     orientation: "ns"
   2:
     name: "A2"

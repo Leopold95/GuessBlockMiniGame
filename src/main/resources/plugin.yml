@@ -8,3 +8,8 @@ website: https://www.ukr-minecraft-plugin.fun/
 commands:
   minigame:
     description: Команда мини игры "Угадай блок"
+
+  minigame_testing:
+    description: команды тестирования мимигры
+    permission: guessblock.minigame.testing
+    permission-message: "У вас нет прав на использования этой команды"

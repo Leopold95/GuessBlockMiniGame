@@ -4,3 +4,12 @@ main: me.leopold95.guessblock.GuessBlock
 api-version: '1.20'
 authors: [Leopold95]
 website: https://www.ukr-minecraft-plugin.fun/
+
+commands:
+  minigame:
+    description: Команда мини игры "Угадай блок"
+
+  minigame_testing:
+    description: команды тестирования мимигры
+    permission: guessblock.minigame.testing
+    permission-message: "У вас нет прав на использования этой команды"
