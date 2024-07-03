@@ -2,6 +2,7 @@ package me.leopold95.guessblock.core.guessblock;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
+import me.leopold95.guessblock.core.Debug;
 import me.leopold95.guessblock.models.ArenaModel;
 import me.leopold95.guessblock.models.LocationModel;
 import org.bukkit.Bukkit;
@@ -20,17 +21,16 @@ public class ArenasManager {
 
     private final String ARENAS = "arenas";
 
-    private ArrayList<Material> randomBlocksList;
-
     public ArenasManager(GuessBlock plugin){
         this.plugin = plugin;
-
-        randomBlocksList = loadRandomBlocksList();
     }
 
-
+    /**
+     * Инициализирует список всех доступных арен из конфига
+     * @return null или список арен
+     */
     public ArrayList<ArenaModel> loadAll(){
-        plugin.getLogger().log(Level.FINE, Config.getMessage("loading.arenas-begin"));
+        plugin.getLogger().log(Level.INFO, Config.getMessage("loading.arenas-begin"));
 
         ConfigurationSection arenasSection = Config.getArenasSection(ARENAS);
 
@@ -46,58 +46,56 @@ public class ArenasManager {
             try {
                 ArenaModel model = parseModel(ARENAS + "." + key);
                 arenas.add(model);
+                Debug.message("&cArena Loaded");
             }
             catch (Exception exp){
-                plugin.getLogger().log(Level.CONFIG, Config.getMessage("bad-arena-load").replace("%error%", exp.getMessage()));
+                plugin.getLogger().log(Level.WARNING, Config.getMessage("bad-arena-load").replace("%error%", exp.getMessage()));
             }
         }
 
 
-        plugin.getLogger().log(Level.FINE, Config.getMessage("loading.arenas-end").replace("%count%", String.valueOf(arenas.size())));
-        return null;
+        plugin.getLogger().log(Level.INFO, Config.getMessage("loading.arenas-end").replace("%count%", String.valueOf(arenas.size())));
+        return arenas;
     }
 
-    private ArrayList<Material> loadRandomBlocksList(){
-        ArrayList<Material> list = new ArrayList<>();
-        for(String s: Config.getStringList("blocks-list")){
-            list.add(Material.valueOf(s));
-        }
-        return list;
-    }
+
 
     /**
      * Прогрузка доступных арен
      * @param configPart конфиг с аренами
      * @return null или список с 1 и более аренами
      */
-    private ArenaModel parseModel(String configPart, String orientation){
+    private ArenaModel parseModel(String configPart){
         String nsORwe = null;
+        String orientation = Config.getArenasConfig().getString(configPart + ".orientation");
 
         if(orientation.equals("ns"))
             nsORwe = "ns-locations";
         else
             nsORwe = "we-locations";
 
+        Location center = new Location(
+                Bukkit.getWorld(Config.getString("arenas-world")),
+                Config.getArenasConfig().getInt(configPart + ".center.x"),
+                Config.getArenasConfig().getInt(configPart + ".center.y"),
+                Config.getArenasConfig().getInt(configPart + ".center.z"));
+
         return new ArenaModel(
-            Config.getString(configPart + ".name"),
-            new LocationModel(
-                    Config.getInt(configPart + ".center.x"),
-                    Config.getInt(configPart + ".center.y"),
-                    Config.getInt(configPart + ".center.z")),
-            Config.getString(configPart + ".orientation"),
+            Config.getArenasConfig().getString(configPart + ".name"),
+            center,
             false,
-            loadReplaceBlocks(nsORwe + ".first-part"),
-            loadReplaceBlocks(nsORwe + ".second-part"),
+            loadReplaceBlocks(center, nsORwe + ".first-part"),
+            loadReplaceBlocks(center, nsORwe + ".second-part"),
             new Location(
                     Bukkit.getWorld(Config.getString("arenas-world")),
-                    Config.getInt(configPart + ".center.x"),
-                    Config.getInt(configPart + ".center.y"),
-                    Config.getInt(configPart + ".center.z")),
+                    Config.getArenasConfig().getInt(configPart + ".center.x"),
+                    Config.getArenasConfig().getInt(configPart + ".center.y"),
+                    Config.getArenasConfig().getInt(configPart + ".center.z")),
             new Location(
                     Bukkit.getWorld(Config.getString("arenas-world")),
-                    Config.getInt(configPart + ".center.x"),
-                    Config.getInt(configPart + ".center.y"),
-                    Config.getInt(configPart + ".center.z"))
+                    Config.getArenasConfig().getInt(configPart + ".center.x"),
+                    Config.getArenasConfig().getInt(configPart + ".center.y"),
+                    Config.getArenasConfig().getInt(configPart + ".center.z"))
             );
     }
 
@@ -105,7 +103,7 @@ public class ArenasManager {
      * Генерирует список позиций блоков, которые нужно заменить
      * @return null иил список позиуий блоков, которые нужно заменить
      */
-    private ArrayList<Location> loadReplaceBlocks(String configPart){
+    private ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String configPart){
         ArrayList<Location> list = new ArrayList<>();
 
         ConfigurationSection partSection = Config.getSection(configPart);
@@ -117,10 +115,13 @@ public class ArenasManager {
         }
 
         for(String key: partSection.getKeys(false)){
+            int x = Config.getInt(configPart + "." + key + ".x");
+            int z = Config.getInt(configPart + "." + key + ".z");
 
+            list.add(arenaCenter.clone().add(x, 0, z));
         }
 
-        return null;
+        return list;
     }
 
 }

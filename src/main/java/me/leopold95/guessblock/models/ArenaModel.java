@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 
 import java.util.ArrayList;
 
@@ -12,8 +11,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class ArenaModel {
     private String name;
-    private LocationModel centerModel;
-    private String orientation;
+    private Location center;
     @Setter
     private boolean isBusy;
 

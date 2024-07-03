@@ -16,12 +16,13 @@ public final class GuessBlock extends JavaPlugin {
     public void onEnable() {
         Config.register(this);
 
-        engine = new Engine(this);
         keys = new Keys(this);
+        engine = new Engine(this);
 
         getCommand(Commands.MG).setExecutor(new GuessBlockCommand());
         getCommand(Commands.MG).setTabCompleter(new GuessBlockCommand());
 
+        engine.loadAllData();
     }
 
     @Override

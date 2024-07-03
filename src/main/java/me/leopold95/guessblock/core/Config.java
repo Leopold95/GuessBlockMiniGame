@@ -20,7 +20,14 @@ public class Config {
     private static File arenasConfigFile;
     private static FileConfiguration arenasConfig;
 
-    public static ConfigurationSection getArenasSection(String path) { return config.getConfigurationSection(path);}
+    public static void register(JavaPlugin plugin) {
+        createMessagesConfig("messages.yml", plugin);
+        createConfig("config.yml", plugin);
+        createArenasConfig("arenas.yml", plugin);
+    }
+
+    public static ConfigurationSection getArenasSection(String path) { return arenasConfig.getConfigurationSection(path);}
+    public static FileConfiguration getArenasConfig() { return arenasConfig; }
 
     public static boolean existsConfig(String path){
         return config.contains(path);
@@ -79,21 +86,15 @@ public class Config {
         return ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(path));
     }
 
-    public static void register(JavaPlugin plugin) {
-        createMessagesConfig("messages.yml", plugin);
-        createConfig("config.yml", plugin);
-        createConfig("arenas.yml", arenasConfigFile, arenasConfig, plugin);
-    }
-
-    private static void createConfig(String fileName, File file, FileConfiguration configuration, JavaPlugin plugin){
-        file = new File(plugin.getDataFolder(), fileName);
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
+    private static void createArenasConfig(String fileName, JavaPlugin plugin){
+        arenasConfigFile = new File(plugin.getDataFolder(), fileName);
+        if (!arenasConfigFile.exists()) {
+            arenasConfigFile.getParentFile().mkdirs();
             plugin.saveResource(fileName, false);
         }
-        configuration = YamlConfiguration.loadConfiguration(file);
+        arenasConfig = YamlConfiguration.loadConfiguration(arenasConfigFile);
         try {
-            configuration.save(file);
+            arenasConfig.save(arenasConfigFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

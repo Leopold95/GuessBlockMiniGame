@@ -1,3 +1,6 @@
+debug: true
+
+
 blocks-list:
   - DIRT
   - STONE
