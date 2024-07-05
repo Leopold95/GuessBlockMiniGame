@@ -67,6 +67,7 @@ public class ArenasManager {
     private ArenaModel parseModel(String configPart){
         String nsORwe = null;
         String orientation = Config.getArenasConfig().getString(configPart + ".orientation");
+        int replaceHeight = Config.getArenasConfig().getInt(configPart + ".replace-blocks-height");
 
         if(orientation.equals("ns"))
             nsORwe = "ns-locations";
@@ -75,31 +76,37 @@ public class ArenasManager {
 
         Location center = new Location(
                 Bukkit.getWorld(Config.getString("arenas-world")),
-                Config.getArenasConfig().getInt(configPart + ".center.x"),
-                Config.getArenasConfig().getInt(configPart + ".center.y"),
-                Config.getArenasConfig().getInt(configPart + ".center.z"));
+                Config.getArenasConfig().getDouble(configPart + ".center.x"),
+                Config.getArenasConfig().getDouble(configPart + ".center.y"),
+                Config.getArenasConfig().getDouble(configPart + ".center.z"));
 
         return new ArenaModel(
             Config.getArenasConfig().getString(configPart + ".name"),
+            replaceHeight,
             new Location(
                     Bukkit.getWorld(Config.getString("arenas-world")),
-                    Config.getArenasConfig().getInt(configPart + ".enemy-block-loc.x"),
-                    Config.getArenasConfig().getInt(configPart + ".enemy-block-loc.y"),
-                    Config.getArenasConfig().getInt(configPart + ".enemy-block-loc.z")),
+                    Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_1.x"),
+                    Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_1.y"),
+                    Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_1.z")),
+            new Location(
+                    Bukkit.getWorld(Config.getString("arenas-world")),
+                    Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_2.x"),
+                    Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_2.y"),
+                    Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_2.z")),
             center,
             false,
-            loadReplaceBlocks(center, nsORwe + ".first-part"),
-            loadReplaceBlocks(center, nsORwe + ".second-part"),
+            loadReplaceBlocks(center, nsORwe + ".first-part", replaceHeight),
+            loadReplaceBlocks(center, nsORwe + ".second-part", replaceHeight),
             new Location(
                     Bukkit.getWorld(Config.getString("arenas-world")),
-                    Config.getArenasConfig().getInt(configPart + ".center.x"),
-                    Config.getArenasConfig().getInt(configPart + ".center.y"),
-                    Config.getArenasConfig().getInt(configPart + ".center.z")),
+                    Config.getArenasConfig().getDouble(configPart + ".spawn.first.x"),
+                    Config.getArenasConfig().getDouble(configPart + ".spawn.first.y"),
+                    Config.getArenasConfig().getDouble(configPart + ".spawn.first.z")),
             new Location(
                     Bukkit.getWorld(Config.getString("arenas-world")),
-                    Config.getArenasConfig().getInt(configPart + ".center.x"),
-                    Config.getArenasConfig().getInt(configPart + ".center.y"),
-                    Config.getArenasConfig().getInt(configPart + ".center.z"))
+                    Config.getArenasConfig().getDouble(configPart + ".spawn.second.x"),
+                    Config.getArenasConfig().getDouble(configPart + ".spawn.second.y"),
+                    Config.getArenasConfig().getDouble(configPart + ".spawn.second.z"))
             );
     }
 
@@ -107,8 +114,10 @@ public class ArenasManager {
      * Генерирует список позиций блоков, которые нужно заменить
      * @return null иил список позиуий блоков, которые нужно заменить
      */
-    private ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String configPart){
+    private ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String configPart, int replaceHeight){
         ArrayList<Location> list = new ArrayList<>();
+
+        Location blocksHeight = arenaCenter.clone().add(0, replaceHeight, 0);
 
         ConfigurationSection partSection = Config.getSection(configPart);
 
@@ -122,7 +131,7 @@ public class ArenasManager {
             int x = Config.getInt(configPart + "." + key + ".x");
             int z = Config.getInt(configPart + "." + key + ".z");
 
-            list.add(arenaCenter.clone().add(x, 0, z));
+            list.add(blocksHeight.clone().add(x, 0, z));
         }
 
         return list;

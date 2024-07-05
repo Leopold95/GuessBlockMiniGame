@@ -33,7 +33,8 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             return List.of(
                     Commands.MG_DUEL,
                     Commands.MG_GIVE_UP,
-                    Commands.MG_ACCEPT
+                    Commands.MG_ACCEPT,
+                    Commands.MG_SET_CENTER
             );
         }
 
@@ -70,9 +71,35 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             case Commands.MG_ACCEPT -> {
                 return onAcceptCommand(args, player);
             }
+
+            case Commands.MG_SET_CENTER -> {
+                return onSetCenterCommand(args, player);
+            }
         }
 
         return false;
+    }
+
+    private boolean onSetCenterCommand(@NotNull String[] args, Player player){
+        if(args.length != 2){
+            String message = Config.getMessage("commands.bad-set-center-args")
+                            .replace("%base%", Commands.MG)
+                            .replace("%first%", Commands.MG_SET_CENTER)
+                            .replace("%second%", Config.getMessage("placeholders.arena-id"));
+            player.sendMessage(message);
+            return true;
+        }
+
+        String arenaIdStr = args[1];
+        int arenaId = Integer.parseInt(arenaIdStr);
+
+        double x = player.getLocation().getBlockX();
+        double y = player.getLocation().getBlockY();
+        double z = player.getLocation().getBlockZ();
+
+
+
+        return true;
     }
 
     private boolean onDuelCommand(@NotNull String[] args, Player player){
@@ -132,6 +159,7 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             return false;
         }
 
+        player.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING);
         plugin.engine.getGame().tryAcceptGame(player.getName(), args[1]);
         return true;
     }

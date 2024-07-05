@@ -1,7 +1,12 @@
 arenas:
   1:
     name: "A1"
-    enemy-block-loc:
+    replace-blocks-height: -5
+    enemy-block-loc_1:
+      x: 0
+      y: 0
+      z: 0
+    enemy-block-loc_2:
       x: 0
       y: 0
       z: 0

@@ -13,7 +13,9 @@ import java.util.ArrayList;
 @ToString
 public class ArenaModel {
     private String name;
-    private Location enemyBlockLocation;
+    private int replaceBlocksHeight;
+    private Location enemyBlockLocation_1;
+    private Location enemyBlockLocation_2;
     private Location center;
     @Setter
     private boolean isBusy;

@@ -19,5 +19,8 @@ public class JoinListener implements Listener {
 
         if(player.getPersistentDataContainer().has(plugin.keys.DUEL_ACCEPT_WAITING))
             player.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING);
+
+        if(player.getPersistentDataContainer().has(plugin.keys.INTO_GAME_NOW))
+            player.getPersistentDataContainer().remove(plugin.keys.INTO_GAME_NOW);
     }
 }

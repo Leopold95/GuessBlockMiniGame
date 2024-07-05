@@ -26,7 +26,9 @@ public class GuessBlockTesting implements CommandExecutor, TabCompleter {
         return List.of(
                 Commands.MG_TESTING_LIST_ARENAS,
                 Commands.MG_TESTING_LIST_P_R_B_1_A,
-                Commands.MG_TESTING_TP_TO_ARENA
+                Commands.MG_TESTING_TP_TO_ARENA,
+                Commands.MG_TESTING_TO_SP_1,
+                Commands.MG_TESTING_TO_SP_2
         );
     }
 
@@ -51,6 +53,22 @@ public class GuessBlockTesting implements CommandExecutor, TabCompleter {
                 return false;
 
             plugin.engine.getArenasManager().tpToArena((Player) sender, Integer.parseInt(args[1]));
+        }
+
+        if(args[0].equals(Commands.MG_TESTING_TO_SP_1)){
+            int aId = Integer.parseInt(args[1]);
+
+            ArenaModel arena = plugin.engine.getArenas().get(aId);
+
+            ((Player)sender).teleport(arena.getFirstSpawn());
+        }
+
+        if(args[0].equals(Commands.MG_TESTING_TO_SP_2)){
+            int aId = Integer.parseInt(args[1]);
+
+            ArenaModel arena = plugin.engine.getArenas().get(aId);
+
+            ((Player)sender).teleport(arena.getSecondSpawn());
         }
 
         return true;

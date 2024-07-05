@@ -68,23 +68,30 @@ arenas-replace-blocks-height: 50
 ns-locations:
   first-part:
     1:
-      x: 1
-      z: 1
-    2:
       x: 3
       z: 1
+    2:
+      x: 5
+      z: 1
     3:
-      x: 4
+      x: 7
       z: 1
     4:
-      x: 1
-      z: 4
+      x: 9
+      z: 1
     5:
-      x: 1
-      z: 3
+      x: 3
+      z: -1
     6:
-      x: 1
-      z: 2
+      x: 5
+      z: -1
+    7:
+      x: 7
+      z: -1
+    8:
+      x: 9
+      z: -1
+
 
   second-part:
     1:
