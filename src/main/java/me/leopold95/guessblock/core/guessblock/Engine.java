@@ -24,6 +24,7 @@ public class Engine {
     @Getter
     private ArenasManager arenasManager;
     private ConfigParser configParser;
+    @Getter
     private Game game;
 
     public Engine(GuessBlock plugin){
@@ -31,7 +32,7 @@ public class Engine {
 
         arenasManager = new ArenasManager(this.plugin);
         configParser = new ConfigParser();
-        game = new Game();
+        game = new Game(this.plugin);
     }
 
     public void loadAllData(){

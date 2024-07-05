@@ -1,13 +1,26 @@
 bad-arena-load: "Щось сталося при парсингу(заватаженні) однієї з арен: %error%"
 only-for-players: "Ця команда тольки для гравців"
 
-called-for-minigame: "Введіть команду \%base% %first% або натисніть на це повідомлення."
+called-for-minigame: "Введіть команду /%base% %first% %second% або натисніть на це повідомлення."
+bad-duel-begin: "Один з гравців покинув гру. Невдалося почати дуєль"
 
 placeholders:
-  player: гравець
+  player: "гравець"
+
+game:
+  no-empty-arena: "Зараж немає вільних арен. Зачейкайте"
+
+hover:
+  accept-to-duel: "Натисніть для початку дуєлі з %name%"
 
 commands:
-  bad-args: "Введіть \%base% <%first%> <%second%>"
+  bad-args: "Введіть /%base% <%first%> <%second%>"
+  duel-accepted-caller: "Гравець %name% прийняв вашу дуель. Починаємо"
+  duel-accepted-aim: "Ви прийняли дуель від гравця %name%. Починаємо"
+  cant-accept-self: "Ви не можете прийняти дуль від самого себе"
+  cant-duel-self: "Ви не можете визвати дуль  самого себе"
+  bad-duel-player: "Такого гравця не існуэ"
+  duel-accept-waiting: "Ви хочете поча дуель з %name%. Зачекаэмо на його згоду"
 
 loading:
   arenas-begin: "Початок завантаження всіх арен..."

@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
@@ -57,8 +58,6 @@ public class ArenasManager {
         plugin.getLogger().log(Level.INFO, Config.getMessage("loading.arenas-end").replace("%count%", String.valueOf(arenas.size())));
         return arenas;
     }
-
-
 
     /**
      * Прогрузка доступных арен
@@ -127,6 +126,11 @@ public class ArenasManager {
         }
 
         return list;
+    }
+
+    public void tpToArena(Player player, int id){
+        ArenaModel arena = plugin.engine.getArenas().get(id);
+        player.teleport(arena.getCenter());
     }
 
 }
