@@ -8,9 +8,11 @@ import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 
 @Getter
@@ -19,8 +21,8 @@ import java.util.logging.Level;
 public class Arena {
     private String name;
     private int replaceBlocksHeight;
-    private Location enemyBlockLocation_1;
-    private Location enemyBlockLocation_2;
+    private Location findableBlockFirst;
+    private Location findableBlockSecond;
     private Location center;
     @Setter
     private boolean isBusy;
@@ -30,6 +32,36 @@ public class Arena {
 
     private Location firstSpawn;
     private Location secondSpawn;
+
+    /**
+     * Устанавливает блоки, которые необходимо отгадать
+     * @param first первый тип блока
+     * @param second второй тип блока
+     */
+    public void setBlocksToFind(Material first, Material second){
+        findableBlockFirst.getBlock().setType(first);
+        findableBlockSecond.getBlock().setType(second);
+    }
+
+    /**
+     * Расставляет рандомные блоки под люки
+     * @param randomList список рандомных блоков
+     */
+    public void updateRandomBlocks(ArrayList<Material> randomList){
+        Random random = new Random();
+
+        for(Location block: firstReplaceBlocks){
+            int randomMaterialId = random.nextInt(0, randomList.size());
+            Material randomMaterial = randomList.get(randomMaterialId);
+            block.getBlock().setType(randomMaterial);
+        }
+
+        for(Location block: secondReplaceBlocks){
+            int randomMaterialId = random.nextInt(0, randomList.size());
+            Material randomMaterial = randomList.get(randomMaterialId);
+            block.getBlock().setType(randomMaterial);
+        }
+    }
 
     /**
      * Прогрузка доступных арен

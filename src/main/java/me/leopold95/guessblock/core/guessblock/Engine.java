@@ -5,13 +5,11 @@ import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.Debug;
 import me.leopold95.guessblock.models.Arena;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.logging.Level;
 
 public class Engine {
@@ -22,8 +20,9 @@ public class Engine {
     //список арен доступных для игры
     @Getter
     private ArrayList<Arena> arenas;
+    @Getter
     //список рандомных блоков, доступных для игры
-    private ArrayList<Material> possibleBlocks;
+    private ArrayList<Material> randomBlockList;
 
     @Getter
     private ConfigParser configParser;
@@ -40,7 +39,7 @@ public class Engine {
     public void loadAllData(){
         arenas = loadAllArenas();
 
-        possibleBlocks = loadRandomBlocksList();
+        randomBlockList = loadRandomBlocksList();
 
 
         plugin.getLogger().log(Level.FINE, Config.getMessage("loading.gc-called"));
@@ -93,18 +92,6 @@ public class Engine {
      */
     public void teleportToArenaCenter(Arena arena, Player player){
         player.teleport(arena.getCenter());
-    }
-
-    /**
-     * Расставляет рандомные блоки под люки
-     * @param positions список позиций блоков
-     */
-    public void placeRandomBlocks(ArrayList<Location> positions){
-        for(Location block: positions){
-            int randomMaterialId = new Random().nextInt(0, possibleBlocks.size());
-            Material randomMaterial = possibleBlocks.get(randomMaterialId);
-            block.getBlock().setType(randomMaterial);
-        }
     }
 
     /**
