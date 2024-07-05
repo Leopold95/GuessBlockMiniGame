@@ -2,7 +2,7 @@ package me.leopold95.guessblock.commands;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.enums.Commands;
-import me.leopold95.guessblock.models.ArenaModel;
+import me.leopold95.guessblock.models.Arena;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,7 +38,7 @@ public class GuessBlockTesting implements CommandExecutor, TabCompleter {
             return false;
 
         if(args[0].equals(Commands.MG_TESTING_LIST_ARENAS)){
-            for(ArenaModel arena: plugin.engine.getArenas())
+            for(Arena arena: plugin.engine.getArenas())
                 sender.sendMessage(arena.toString());
 
             sender.sendMessage("Total arenas: " + plugin.engine.getArenas().size());
@@ -52,13 +52,13 @@ public class GuessBlockTesting implements CommandExecutor, TabCompleter {
             if(args.length != 2)
                 return false;
 
-            plugin.engine.getArenasManager().tpToArena((Player) sender, Integer.parseInt(args[1]));
+            plugin.engine.teleportToArenaCenter(Integer.parseInt(args[1]), (Player) sender);
         }
 
         if(args[0].equals(Commands.MG_TESTING_TO_SP_1)){
             int aId = Integer.parseInt(args[1]);
 
-            ArenaModel arena = plugin.engine.getArenas().get(aId);
+            Arena arena = plugin.engine.getArenas().get(aId);
 
             ((Player)sender).teleport(arena.getFirstSpawn());
         }
@@ -66,7 +66,7 @@ public class GuessBlockTesting implements CommandExecutor, TabCompleter {
         if(args[0].equals(Commands.MG_TESTING_TO_SP_2)){
             int aId = Integer.parseInt(args[1]);
 
-            ArenaModel arena = plugin.engine.getArenas().get(aId);
+            Arena arena = plugin.engine.getArenas().get(aId);
 
             ((Player)sender).teleport(arena.getSecondSpawn());
         }

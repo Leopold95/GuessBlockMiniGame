@@ -2,7 +2,7 @@ package me.leopold95.guessblock.core.guessblock;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
-import me.leopold95.guessblock.models.ArenaModel;
+import me.leopold95.guessblock.models.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -22,6 +22,8 @@ public class Game {
             return;
         }
     }
+
+
 
     /**
      * Начальная подготовка перед началом игры
@@ -76,22 +78,22 @@ public class Game {
      * Вернет свободную арену или нет
      * @return
      */
-    private Optional<ArenaModel> getEmptyArena(){
+    private Optional<Arena> getEmptyArena(){
         return plugin.engine.getArenas().stream().filter(a -> !a.isBusy()).findFirst();
     }
 
     private void teleportToEmptyArena(Player caller, Player target, int arenaId){
-        ArenaModel arena = plugin.engine.getArenas().get(arenaId);
+        Arena arena = plugin.engine.getArenas().get(arenaId);
         caller.teleport(arena.getFirstSpawn());
         target.teleport(arena.getSecondSpawn());
     }
 
-    private void teleportToEmptyArena(Player caller, Player target, ArenaModel arena){
+    private void teleportToEmptyArena(Player caller, Player target, Arena arena){
         caller.teleport(arena.getFirstSpawn());
         target.teleport(arena.getSecondSpawn());
     }
 
-    private void updateCurrentArena(ArenaModel arena){
+    private void updateCurrentArena(Arena arena){
         //update blocks
 
         //update target blocks

@@ -3,26 +3,29 @@ package me.leopold95.guessblock.core.guessblock;
 import lombok.Getter;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
-import me.leopold95.guessblock.models.ArenaModel;
+import me.leopold95.guessblock.core.Debug;
+import me.leopold95.guessblock.models.Arena;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.checkerframework.checker.units.qual.C;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 
 public class Engine {
     private GuessBlock plugin;
 
+    private final String ARENAS_CFG = "arenas";
+
     //список арен доступных для игры
     @Getter
-    private ArrayList<ArenaModel> arenas;
+    private ArrayList<Arena> arenas;
     //список рандомных блоков, доступных для игры
     private ArrayList<Material> possibleBlocks;
 
     @Getter
-    private ArenasManager arenasManager;
     private ConfigParser configParser;
     @Getter
     private Game game;
@@ -30,13 +33,12 @@ public class Engine {
     public Engine(GuessBlock plugin){
         this.plugin = plugin;
 
-        arenasManager = new ArenasManager(this.plugin);
         configParser = new ConfigParser();
         game = new Game(this.plugin);
     }
 
     public void loadAllData(){
-        arenas = arenasManager.loadAll();
+        arenas = loadAllArenas();
 
         possibleBlocks = loadRandomBlocksList();
 
@@ -46,18 +48,62 @@ public class Engine {
     }
 
     /**
-     * Расставляет рандомные блоки под люки
-     * @param arenaId ид арены для обновления
+     * Инициализирует список всех доступных арен из конфига
+     * @return null или список арен
      */
-    public void placeRandom(int arenaId){
-        ArenaModel model = arenas.get(arenaId);
+    public ArrayList<Arena> loadAllArenas(){
+        plugin.getLogger().log(Level.INFO, Config.getMessage("loading.arenas-begin"));
 
-        for(Location block: model.getFirstReplaceBlocks()){
-            block.getBlock().setType(Material.ACACIA_LOG);
+        ConfigurationSection arenasSection = Config.getArenasSection(ARENAS_CFG);
+
+        if(arenasSection == null || arenasSection.getKeys(false).isEmpty()){
+            plugin.getLogger().log(Level.WARNING, Config.getMessage("loading.arenas-bad"));
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            return null;
         }
 
-        for(Location block: model.getSecondReplaceBlocks()){
-            block.getBlock().setType(Material.DIRT);
+        ArrayList<Arena> arenas = new ArrayList<>();
+
+        for(String key: arenasSection.getKeys(false)){
+            try {
+                Arena model = Arena.parseModel(ARENAS_CFG + "." + key, plugin);
+                arenas.add(model);
+                Debug.message(model.toString());
+            }
+            catch (Exception exp){
+                plugin.getLogger().log(Level.WARNING, Config.getMessage("bad-arena-load").replace("%error%", exp.getMessage()));
+            }
+        }
+
+
+        plugin.getLogger().log(Level.INFO, Config.getMessage("loading.arenas-end").replace("%count%", String.valueOf(arenas.size())));
+        return arenas;
+    }
+
+    /**
+     * Телепортирует игрока в центр арены
+     */
+    public void teleportToArenaCenter(int arenaId, Player player){
+        Arena arena = arenas.get(arenaId);
+        teleportToArenaCenter(arena, player);
+    }
+
+    /**
+     * Телепортирует игрока в центр арены
+     */
+    public void teleportToArenaCenter(Arena arena, Player player){
+        player.teleport(arena.getCenter());
+    }
+
+    /**
+     * Расставляет рандомные блоки под люки
+     * @param positions список позиций блоков
+     */
+    public void placeRandomBlocks(ArrayList<Location> positions){
+        for(Location block: positions){
+            int randomMaterialId = new Random().nextInt(0, possibleBlocks.size());
+            Material randomMaterial = possibleBlocks.get(randomMaterialId);
+            block.getBlock().setType(randomMaterial);
         }
     }
 
