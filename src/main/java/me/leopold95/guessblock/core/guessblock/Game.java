@@ -4,6 +4,7 @@ import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.models.Arena;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -23,6 +24,9 @@ public class Game {
         }
     }
 
+    public void selectBlocksToFind(Player caller, Player target){
+
+    }
 
 
     /**
@@ -94,10 +98,13 @@ public class Game {
     }
 
     private void updateCurrentArena(Arena arena){
-        //update blocks
+        //update fidable blocks
+        arena.updateRandomBlocks(plugin.engine.getRandomBlockList());
 
         //update target blocks
+        arena.setBlocksToFind(Material.DIAMOND_BLOCK, Material.DIAMOND_BLOCK);
 
         //update hatches
+        arena.setTrapDors();
     }
 }

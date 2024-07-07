@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -34,6 +35,19 @@ public class Arena {
     private Location secondSpawn;
 
     /**
+     * Устанавливает люки над блоками для отгадки
+     */
+    public void setTrapDors(){
+        for(Location block: firstReplaceBlocks){
+            block.clone().add(0, 1, 0).getBlock().setType(Material.ACACIA_TRAPDOOR);
+        }
+
+        for(Location block: secondReplaceBlocks){
+            block.clone().add(0, 1, 0).getBlock().setType(Material.ACACIA_TRAPDOOR);;
+        }
+    }
+
+    /**
      * Устанавливает блоки, которые необходимо отгадать
      * @param first первый тип блока
      * @param second второй тип блока
@@ -47,7 +61,7 @@ public class Arena {
      * Расставляет рандомные блоки под люки
      * @param randomList список рандомных блоков
      */
-    public void updateRandomBlocks(ArrayList<Material> randomList){
+    public void updateRandomBlocks(List<Material> randomList){
         Random random = new Random();
 
         for(Location block: firstReplaceBlocks){

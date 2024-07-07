@@ -75,9 +75,19 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             case Commands.MG_SET_CENTER -> {
                 return onSetCenterCommand(args, player);
             }
+
+            case Commands.MG_SET_BLOCK_TO_GUESS -> {
+                onSetGuessBlocks(args, player);
+            }
         }
 
         return false;
+    }
+
+    private boolean onSetGuessBlocks(@NotNull String[] args, Player player){
+
+
+        return true;
     }
 
     private boolean onSetCenterCommand(@NotNull String[] args, Player player){
