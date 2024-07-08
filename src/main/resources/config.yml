@@ -3,67 +3,93 @@ debug: true
 minigame-duel-accept-time: 15
 
 blocks-list:
-  - stone
-  - grass_block
-  - dirt
-  - cobblestone
-  - oak_planks
-  - spruce_planks
-  - birch_planks
-  - jungle_planks
-  - acacia_planks
-  - dark_oak_planks
-  - oak_log
-  - spruce_log
-  - birch_log
-  - jungle_log
-  - acacia_log
-  - dark_oak_log
-  - sand
-  - red_sand
-  - gravel
-  - gold_ore
-  - iron_ore
-  - coal_ore
-  - oak_leaves
-  - spruce_leaves
-  - birch_leaves
-  - jungle_leaves
-  - acacia_leaves
-  - dark_oak_leaves
-  - sponge
-  - glass
-  - lapis_ore
-  - lapis_block
-  - dispenser
-  - sandstone
-  - chiseled_sandstone
-  - smooth_sandstone
-  - red_sandstone
-  - chiseled_red_sandstone
-  - smooth_red_sandstone
-  - note_block
-  - powered_rail
-  - detector_rail
-  - sticky_piston
-  - cobweb
-  - grass
-  - fern
-  - dead_bush
-  - seagrass
-  - sea_pickle
-  - white_wool
+  - STONE
+  - GRASS_BLOCK
+  - DIRT
+  - COBBLESTONE
+  - OAK_PLANKS
+  - SPRUCE_PLANKS
+  - BIRCH_PLANKS
+  - JUNGLE_PLANKS
+  - ACACIA_PLANKS
+  - DARK_OAK_PLANKS
+  - OAK_LOG
+  - SPRUCE_LOG
+  - BIRCH_LOG
+  - JUNGLE_LOG
+  - ACACIA_LOG
+  - DARK_OAK_LOG
+  - SAND
+  - RED_SAND
+  - GRAVEL
+  - GOLD_ORE
+  - IRON_ORE
+  - COAL_ORE
+  - OAK_LEAVES
+  - SPRUCE_LEAVES
+  - BIRCH_LEAVES
+  - JUNGLE_LEAVES
+  - ACACIA_LEAVES
+  - DARK_OAK_LEAVES
+  - SPONGE
+  - GLASS
+  - LAPIS_ORE
+  - LAPIS_BLOCK
+  - DISPENSER
+  - SANDSTONE
+  - CHISELED_SANDSTONE
+  - SMOOTH_SANDSTONE
+  - RED_SANDSTONE
+  - CHISELED_RED_SANDSTONE
+  - SMOOTH_RED_SANDSTONE
+  - NOTE_BLOCK
+  - STICKY_PISTON
+  - COBWEB
+  - FERN
+  - DEAD_BUSH
+  - SEAGRASS
+  - SEA_PICKLE
+  - WHITE_WOOL
 
-#DONT CHANHGE THIS
-possible-orientations:
-  - ns
-  - we
+arena-types:
+  - arena1
+  - arena2
 
 
 #мир со всеми аренами
 arenas-world: world
 #высота на которой будут блоки под люками
 arenas-replace-blocks-height: 50
+
+replace-location:
+  1:
+    type: arena1
+    replace-list:
+      first: #x:y
+        - "3:1"
+        - "5:1"
+        - "7:1"
+        - "9:1"
+
+        - "3:-1"
+        - "5:-1"
+        - "7:-1"
+        - "9:-1"
+      second: #x:y
+        - "3:1"
+        - "5:1"
+        - "7:1"
+        - "9:1"
+
+        - "3:-1"
+        - "5:-1"
+        - "7:-1"
+        - "9:-1"
+  2:
+    type: arena2
+    replace-list:
+      - ""
+
 
 ns-locations:
   first-part:
@@ -92,47 +118,6 @@ ns-locations:
       x: 9
       z: -1
 
-
-  second-part:
-    1:
-      x: -1
-      z: -1
-    2:
-      x: -3
-      z: -1
-    3:
-      x: -4
-      z: -1
-    4:
-      x: -1
-      z: -4
-    5:
-      x: -1
-      z: -3
-    6:
-      x: -1
-      z: -2
-
-we-locations:
-  first-part:
-    1:
-      x: 1
-      z: 1
-    2:
-      x: 3
-      z: 1
-    3:
-      x: 4
-      z: 1
-    4:
-      x: 1
-      z: 4
-    5:
-      x: 1
-      z: 3
-    6:
-      x: 1
-      z: 2
 
   second-part:
     1:

@@ -21,6 +21,7 @@ import java.util.logging.Level;
 @ToString
 public class Arena {
     private String name;
+    private String type;
     private int replaceBlocksHeight;
     private Location findableBlockFirst;
     private Location findableBlockSecond;
@@ -33,6 +34,8 @@ public class Arena {
 
     private Location firstSpawn;
     private Location secondSpawn;
+
+    private final static String REPLACE_CONFIG_PART = "replace-location";
 
     /**
      * Устанавливает люки над блоками для отгадки
@@ -83,14 +86,16 @@ public class Arena {
      * @return null или список с 1 и более аренами
      */
      public static Arena parseModel(String configPart, GuessBlock plugin){
-        String nsORwe = null;
-        String orientation = Config.getArenasConfig().getString(configPart + ".orientation");
         int replaceHeight = Config.getArenasConfig().getInt(configPart + ".replace-blocks-height");
 
-        if(orientation.equals("ns"))
-            nsORwe = "ns-locations";
-        else
-            nsORwe = "we-locations";
+        String type = Config.getArenasConfig().getString(configPart + ".type");
+        String name = Config.getArenasConfig().getString(configPart + ".name");
+
+        if(!plugin.engine.getArenaTypes().contains(type)){
+            plugin.getLogger().warning(Config.getMessage("loading.bad-type").replace("%name%", name));
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            return null;
+        }
 
         Location center = new Location(
                 Bukkit.getWorld(Config.getString("arenas-world")),
@@ -99,7 +104,8 @@ public class Arena {
                 Config.getArenasConfig().getDouble(configPart + ".center.z"));
 
         return new Arena(
-                Config.getArenasConfig().getString(configPart + ".name"),
+                name,
+                type,
                 replaceHeight,
                 new Location(
                         Bukkit.getWorld(Config.getString("arenas-world")),
@@ -113,8 +119,8 @@ public class Arena {
                         Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_2.z")),
                 center,
                 false,
-                loadReplaceBlocks(center, nsORwe + ".first-part", replaceHeight, plugin),
-                loadReplaceBlocks(center, nsORwe + ".second-part", replaceHeight, plugin),
+                loadReplaceBlocks(center, ".replace-list.first", replaceHeight, plugin, name, type),
+                loadReplaceBlocks(center, ".replace-list.second", replaceHeight, plugin, name, type),
                 new Location(
                         Bukkit.getWorld(Config.getString("arenas-world")),
                         Config.getArenasConfig().getDouble(configPart + ".spawn.first.x"),
@@ -132,12 +138,12 @@ public class Arena {
      * Генерирует список позиций блоков, которые нужно заменить
      * @return null иил список позиуий блоков, которые нужно заменить
      */
-    private static ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String configPart, int replaceHeight, GuessBlock plugin){
+    private static ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
         ArrayList<Location> list = new ArrayList<>();
 
         Location blocksHeight = arenaCenter.clone().add(0, replaceHeight, 0);
 
-        ConfigurationSection partSection = Config.getSection(configPart);
+        ConfigurationSection partSection = Config.getSection(REPLACE_CONFIG_PART);
 
         if(partSection == null || partSection.getKeys(false).isEmpty()){
             plugin.getLogger().log(Level.WARNING, Config.getMessage("loading.replace-blocks-bad"));
@@ -145,9 +151,34 @@ public class Arena {
             return null;
         }
 
+
+        for (String key: partSection.getKeys(false)){
+            String type = Config.getString(REPLACE_CONFIG_PART + "." + key + ".type");
+
+            if(!arenaType.equals(type)){
+                continue;
+            }
+
+            List<String> posList = Config.getStringList(REPLACE_CONFIG_PART + "." + key + partInCfg);
+
+            for (String pos: posList){
+                String[] p = pos.split(":");
+
+                try {
+                    double x = Double.parseDouble(p[0]);
+                    double z = Double.parseDouble(p[1]);
+
+                    list.add(blocksHeight.clone().add(x, 0, z));
+                }
+                catch (Exception exp){
+                    plugin.getLogger().warning("Cant parse replace location '"+ arenaName+"': " + exp.getMessage());
+                }
+            }
+        }
+
         for(String key: partSection.getKeys(false)){
-            int x = Config.getInt(configPart + "." + key + ".x");
-            int z = Config.getInt(configPart + "." + key + ".z");
+            int x = Config.getInt(partInCfg + "." + key + ".x");
+            int z = Config.getInt(partInCfg + "." + key + ".z");
 
             list.add(blocksHeight.clone().add(x, 0, z));
         }

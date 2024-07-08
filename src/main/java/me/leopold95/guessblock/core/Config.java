@@ -1,5 +1,6 @@
 package me.leopold95.guessblock.core;
 
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class Config {
     private static File messagesConfigFile;
     private static FileConfiguration messagesConfig;
+
     private static File configFile;
     private static FileConfiguration config;
 
@@ -60,6 +62,8 @@ public class Config {
                 .map(line -> ChatColor.translateAlternateColorCodes('&', line))
                 .collect(Collectors.toList()); // Or .collect(Collectors.toList()) for older Java versions
     }
+
+
 
     public static List<Integer> getIntList(String path) {
         return config.getIntegerList(path);

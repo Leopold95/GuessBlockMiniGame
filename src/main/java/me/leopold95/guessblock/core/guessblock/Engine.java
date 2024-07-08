@@ -5,11 +5,14 @@ import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.Debug;
 import me.leopold95.guessblock.models.Arena;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 public class Engine {
@@ -25,6 +28,9 @@ public class Engine {
     private ArrayList<Material> randomBlockList;
 
     @Getter
+    private List<String> arenaTypes;
+
+    @Getter
     private ConfigParser configParser;
     @Getter
     private Game game;
@@ -37,10 +43,9 @@ public class Engine {
     }
 
     public void loadAllData(){
+        arenaTypes = Config.getStringList("arena-types");
         arenas = loadAllArenas();
-
         randomBlockList = loadRandomBlocksList();
-
 
         plugin.getLogger().log(Level.FINE, Config.getMessage("loading.gc-called"));
         System.gc();
