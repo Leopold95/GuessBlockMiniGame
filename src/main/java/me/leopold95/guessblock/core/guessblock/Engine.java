@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class Engine {
@@ -90,6 +91,24 @@ public class Engine {
     public void teleportToArenaCenter(int arenaId, Player player){
         Arena arena = arenas.get(arenaId);
         teleportToArenaCenter(arena, player);
+    }
+
+    /**
+     * Вернет свободную арену или нет
+     */
+    public Optional<Arena> getEmptyArena(){
+        return plugin.engine.getArenas().stream().filter(a -> !a.isBusy()).findFirst();
+    }
+
+    public void teleportToEmptyArena(Player caller, Player target, int arenaId){
+        Arena arena = plugin.engine.getArenas().get(arenaId);
+        teleportToEmptyArena(caller, target, arena);
+    }
+
+
+    public void teleportToEmptyArena(Player caller, Player target, Arena arena){
+        caller.teleport(arena.getFirstSpawn());
+        target.teleport(arena.getSecondSpawn());
     }
 
     /**

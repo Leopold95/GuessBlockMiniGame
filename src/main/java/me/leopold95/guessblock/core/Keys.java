@@ -8,13 +8,15 @@ public class Keys {
 
     public NamespacedKey BLOCK_TO_GUESS;
     public NamespacedKey DUEL_ACCEPT_WAITING;
-    public NamespacedKey INTO_GAME_NOW;
+    public NamespacedKey SELECTING_BLOCK_TO_GUESS;
+    public NamespacedKey CURRENT_ENEMY;
 
     public Keys(GuessBlock plugin){
         this.plugin = plugin;
 
         BLOCK_TO_GUESS = new NamespacedKey(this.plugin, "BLOCK_TO_GUESS");
         DUEL_ACCEPT_WAITING = new NamespacedKey(this.plugin, "DUEL_ACCEPT_WAITING");
-        INTO_GAME_NOW = new NamespacedKey(this.plugin, "INTO_GAME_NOW");
+        SELECTING_BLOCK_TO_GUESS = new NamespacedKey(this.plugin, "SELECTING_BLOCK_TO_GUESS");
+        CURRENT_ENEMY = new NamespacedKey(this.plugin, "CURRENT_ENEMY");
     }
 }

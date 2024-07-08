@@ -3,10 +3,13 @@ package me.leopold95.guessblock.commands;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.enums.Commands;
+import me.leopold95.guessblock.models.Arena;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class GuessBlockCommand implements TabCompleter, CommandExecutor {
     private GuessBlock plugin;
@@ -34,7 +39,8 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
                     Commands.MG_DUEL,
                     Commands.MG_GIVE_UP,
                     Commands.MG_ACCEPT,
-                    Commands.MG_SET_CENTER
+                    Commands.MG_SET_CENTER,
+                    Commands.MG_SET_BLOCK_TO_GUESS
             );
         }
 
@@ -42,12 +48,10 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             switch (args[0]){
                 case Commands.MG_DUEL:
                 case Commands.MG_ACCEPT:
-                    ArrayList<String> names = new ArrayList<>();
+                    return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+                case Commands.MG_SET_BLOCK_TO_GUESS:
+                    return plugin.engine.getRandomBlockList().stream().map(Material::toString).collect(Collectors.toList());
 
-                    for(Player p : Bukkit.getOnlinePlayers())
-                        names.add(p.getName());
-
-                    return names;
             }
         }
 
@@ -85,7 +89,25 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
     }
 
     private boolean onSetGuessBlocks(@NotNull String[] args, Player player){
+        if(!player.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS))
+            return true;
 
+        if(args.length != 1){
+            player.sendMessage(Config.getMessage("commands.bad-selecting-block"));
+            return true;
+        }
+
+        Material material = Material.valueOf(args[0]);
+
+        String enemyName = player.getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+        Player enemy = Bukkit.getPlayer(enemyName);
+
+        enemy.getPersistentDataContainer().set(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING, material.toString());
+
+        player.sendMessage(Config.getMessage("commands.game-enemy-guess-block-selected").replace("%name%", material.toString()));
+        enemy.sendActionBar(Config.getMessage("commands.game-you-has-guess-block"));
+
+        player.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
 
         return true;
     }
@@ -170,7 +192,43 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         }
 
         player.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING);
-        plugin.engine.getGame().tryAcceptGame(player.getName(), args[1]);
+
+        String callerName = player.getName();
+        String targetName = args[1];
+
+        if(Bukkit.getPlayer(callerName) == null || Bukkit.getPlayer(targetName) == null){
+            Objects.requireNonNull(Bukkit.getPlayer(callerName)).sendMessage(Config.getMessage("bad-duel-begin"));
+            Objects.requireNonNull(Bukkit.getPlayer(targetName)).sendMessage(Config.getMessage("bad-duel-begin"));
+
+            return true;
+        }
+
+        Player caller = Bukkit.getPlayer(callerName);
+        Player target = Bukkit.getPlayer(targetName);
+
+        if(callerName.equals(targetName)){
+            caller.sendMessage(Config.getMessage("commands.cant-accept-self"));
+            return true;
+        }
+
+        //TODO переместить перед тем как можо кинуть приглашение на дуэль
+        var optArena = plugin.engine.getEmptyArena();
+
+        if(optArena.isEmpty()){
+            target.sendMessage(Config.getMessage("game.no-empty-arena"));
+            caller.sendMessage(Config.getMessage("game.no-empty-arena"));
+            return true;
+        }
+
+        String callerMessage = Config.getMessage("commands.duel-accepted-caller").replace("%name%", targetName);
+        target.sendMessage(callerMessage);
+
+        String targetMessage = Config.getMessage("commands.duel-accepted-aim").replace("%name%", targetName);
+        caller.sendMessage(targetMessage);
+
+        plugin.engine.getGame().startGame(caller, target, optArena.get());
+
+        //plugin.engine.getGame().tryAcceptGame(player.getName(), args[1]);
         return true;
     }
 }
