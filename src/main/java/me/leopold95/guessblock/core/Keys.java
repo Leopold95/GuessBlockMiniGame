@@ -7,16 +7,24 @@ public class Keys {
     private GuessBlock plugin;
 
     public NamespacedKey BLOCK_TO_GUESS;
-    public NamespacedKey DUEL_ACCEPT_WAITING;
+    public NamespacedKey DUEL_ACCEPT_WAITING_OF;
     public NamespacedKey SELECTING_BLOCK_TO_GUESS;
     public NamespacedKey CURRENT_ENEMY;
+
+    public NamespacedKey CAN_CLOSE_TRAPDOOR;
+    public NamespacedKey FIST_TRAPDOOR;
+    public NamespacedKey SECOND_TRAPDOOR;
 
     public Keys(GuessBlock plugin){
         this.plugin = plugin;
 
         BLOCK_TO_GUESS = new NamespacedKey(this.plugin, "BLOCK_TO_GUESS");
-        DUEL_ACCEPT_WAITING = new NamespacedKey(this.plugin, "DUEL_ACCEPT_WAITING");
+        DUEL_ACCEPT_WAITING_OF = new NamespacedKey(this.plugin, "DUEL_ACCEPT_WAITING");
         SELECTING_BLOCK_TO_GUESS = new NamespacedKey(this.plugin, "SELECTING_BLOCK_TO_GUESS");
         CURRENT_ENEMY = new NamespacedKey(this.plugin, "CURRENT_ENEMY");
+
+        CAN_CLOSE_TRAPDOOR = new NamespacedKey(this.plugin, "CAN_CLOSE_TRAPDOOR");
+        FIST_TRAPDOOR = new NamespacedKey(this.plugin, "FIST_TRAPDOOR");
+        SECOND_TRAPDOOR = new NamespacedKey(this.plugin, "SECOND_TRAPDOOR");
     }
 }

@@ -1,15 +1,17 @@
-package me.leopold95.guessblock.models;
+package me.leopold95.guessblock.core.guessblock;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import customblockdata.CustomBlockData;
+import lombok.*;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,21 +34,43 @@ public class Arena {
     private ArrayList<Location> firstReplaceBlocks;
     private ArrayList<Location> secondReplaceBlocks;
 
-    private Location firstSpawn;
-    private Location secondSpawn;
+    private Location firstSpawn, secondSpawn;
+
+    private ArrayList<Block> firstBlocksList, secondBlocksList;
+
+    @Setter
+    private Player firstPlayer, secondPlayer;
 
     private final static String REPLACE_CONFIG_PART = "replace-location";
+
+    public void clearBannedTrapdoors(){
+        firstBlocksList.clear();
+    }
 
     /**
      * Устанавливает люки над блоками для отгадки
      */
     public void setTrapDors(){
         for(Location block: firstReplaceBlocks){
-            block.clone().add(0, 1, 0).getBlock().setType(Material.ACACIA_TRAPDOOR);
+            Location trapDoorLocation = block.clone().add(0, 1, 0);
+
+            firstBlocksList.add(trapDoorLocation.getBlock());
+
+            trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
+            PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
+            data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
+            data.set(GuessBlock.getPlugin().keys.FIST_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
 
         for(Location block: secondReplaceBlocks){
-            block.clone().add(0, 1, 0).getBlock().setType(Material.ACACIA_TRAPDOOR);;
+            Location trapDoorLocation = block.clone().add(0, 1, 0);
+
+            secondBlocksList.add(trapDoorLocation.getBlock());
+
+            trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
+            PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
+            data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
+            data.set(GuessBlock.getPlugin().keys.SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
     }
 
@@ -130,7 +154,11 @@ public class Arena {
                         Bukkit.getWorld(Config.getString("arenas-world")),
                         Config.getArenasConfig().getDouble(configPart + ".spawn.second.x"),
                         Config.getArenasConfig().getDouble(configPart + ".spawn.second.y"),
-                        Config.getArenasConfig().getDouble(configPart + ".spawn.second.z"))
+                        Config.getArenasConfig().getDouble(configPart + ".spawn.second.z")),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                null,
+                null
         );
     }
 

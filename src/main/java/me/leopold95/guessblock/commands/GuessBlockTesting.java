@@ -2,7 +2,7 @@ package me.leopold95.guessblock.commands;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.enums.Commands;
-import me.leopold95.guessblock.models.Arena;
+import me.leopold95.guessblock.core.guessblock.Arena;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

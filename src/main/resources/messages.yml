@@ -25,6 +25,8 @@ commands:
   bad-set-center-args: "Введіть /%base% <%first%> <%second%>"
   bad-selecting-block: "У Вас не моє моги використовувати цю команду, ви не граєте в дуєль зараз"
 
+  accept-you-dont-has-any-duels: "Зараз ви не очікуєте жодної дуєлі"
+
   game-enemy-guess-block-selected: "Тепер ваш ворог має відгадати блок: 1 %name%"
   game-you-has-guess-block: "Для вас вже обрали блок, який ви маєте відгадати"
   game-select-guess-block-waiting: "Очікуємо поки обидві сторони оберуть блоки для відгадки"

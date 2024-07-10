@@ -4,14 +4,11 @@ import lombok.Getter;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.Debug;
-import me.leopold95.guessblock.models.Arena;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -100,16 +97,16 @@ public class Engine {
         return plugin.engine.getArenas().stream().filter(a -> !a.isBusy()).findFirst();
     }
 
-    public void teleportToEmptyArena(Player caller, Player target, int arenaId){
-        Arena arena = plugin.engine.getArenas().get(arenaId);
-        teleportToEmptyArena(caller, target, arena);
-    }
-
-
-    public void teleportToEmptyArena(Player caller, Player target, Arena arena){
-        caller.teleport(arena.getFirstSpawn());
-        target.teleport(arena.getSecondSpawn());
-    }
+//    public void teleportToEmptyArena(Player caller, Player target, int arenaId){
+//        Arena arena = plugin.engine.getArenas().get(arenaId);
+//        teleportToEmptyArena(caller, target, arena);
+//    }
+//
+//
+//    public void teleportToEmptyArena(Player caller, Player target, Arena arena){
+//        caller.teleport(arena.getFirstSpawn());
+//        target.teleport(arena.getSecondSpawn());
+//    }
 
     /**
      * Телепортирует игрока в центр арены

@@ -1,6 +1,9 @@
 debug: true
 
-minigame-duel-accept-time: 15
+minigame-duel-accept-time: 120
+
+#час за який гравці мають обрати блоки, які їч ворогу потрібно вгадати
+time-to-select-enemy-block: 10
 
 blocks-list:
   - STONE

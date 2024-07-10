@@ -3,13 +3,11 @@ package me.leopold95.guessblock.commands;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.enums.Commands;
-import me.leopold95.guessblock.models.Arena;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +17,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -134,91 +131,91 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         return true;
     }
 
-    private boolean onDuelCommand(@NotNull String[] args, Player player){
+    private boolean onDuelCommand(@NotNull String @NotNull [] args, Player caller){
         if (args.length != 2){
             String message = Config.getMessage("commands.bad-args")
                     .replace("%base%", Commands.MG)
                     .replace("%first%", Commands.MG_DUEL)
                     .replace("%second%", "<" + Config.getMessage("placeholders.player") + ">");
 
-            player.sendMessage(message);
+            caller.sendMessage(message);
             return false;
+        }
+
+        var optArena = plugin.engine.getEmptyArena();
+        if(optArena.isEmpty()){
+            caller.sendMessage(Config.getMessage("game.no-empty-arena"));
+            return true;
         }
 
         String targetName = args[1];
         Player targetPlayer = Bukkit.getPlayer(targetName);
 
         if(targetPlayer == null){
-            player.sendMessage(Config.getMessage("commands.bad-duel-player"));
+            caller.sendMessage(Config.getMessage("commands.bad-duel-player"));
             return true;
         }
 
-        if(player.getName().equals(targetName)){
-            player.sendMessage(Config.getMessage("commands.cant-duel-self"));
+        if(caller.getName().equals(targetName)){
+            caller.sendMessage(Config.getMessage("commands.cant-duel-self"));
             return true;
         }
-
 
         String message = Config.getMessage("called-for-minigame")
                 .replace("%base%", Commands.MG)
                 .replace("%first%", Commands.MG_DUEL)
                 .replace("%second%", "<" + targetPlayer.getName() + ">");
         Component callDuel = Component.text(message)
-                .clickEvent(ClickEvent.runCommand("/" + Commands.MG + " " + Commands.MG_ACCEPT + " " + player.getName()))
-                .hoverEvent(HoverEvent.showText(Component.text(Config.getMessage("hover.accept-to-duel").replace("%name%", player.getName()))));
+                .clickEvent(ClickEvent.runCommand("/" + Commands.MG + " " + Commands.MG_ACCEPT + " " + caller.getName()))
+                .hoverEvent(HoverEvent.showText(Component.text(Config.getMessage("hover.accept-to-duel").replace("%name%", caller.getName()))));
 
-
-        targetPlayer.getPersistentDataContainer().set(plugin.keys.DUEL_ACCEPT_WAITING, PersistentDataType.STRING, player.getName());
+        targetPlayer.getPersistentDataContainer().set(plugin.keys.DUEL_ACCEPT_WAITING_OF, PersistentDataType.STRING, caller.getName());
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            targetPlayer.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING);
+            targetPlayer.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING_OF);
         }, Config.getInt("minigame-duel-accept-time"));
 
         targetPlayer.sendMessage(callDuel);
-        player.sendMessage(Config.getMessage("commands.duel-accept-waiting").replace("%name%", targetName));
+        caller.sendMessage(Config.getMessage("commands.duel-accept-waiting").replace("%name%", targetName));
 
         return true;
     }
 
-    private boolean onAcceptCommand(@NotNull String[] args, Player player){
+    private boolean onAcceptCommand(@NotNull String[] args, Player target){
         if (args.length != 2){
             String message = Config.getMessage("commands.bad-args")
                     .replace("%base%", Commands.MG)
                     .replace("%first%", Commands.MG_DUEL)
                     .replace("%second%", "<" + Config.getMessage("placeholders.player") + ">");
 
-            player.sendMessage(message);
+            target.sendMessage(message);
             return false;
         }
 
-        player.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING);
+        //игроку никто не кидал дуэль
+        if(!target.getPersistentDataContainer().has(plugin.keys.DUEL_ACCEPT_WAITING_OF)){
+            target.sendMessage(Config.getMessage("commands.accept-you-dont-has-any-duels"));
+            return true;
+        }
 
-        String callerName = player.getName();
-        String targetName = args[1];
+        String callerName = target.getPersistentDataContainer().get(plugin.keys.DUEL_ACCEPT_WAITING_OF, PersistentDataType.STRING);
+        String targetName = target.getName();
 
         if(Bukkit.getPlayer(callerName) == null || Bukkit.getPlayer(targetName) == null){
+            //TODO сдлеать сообщие когда одиз из игроков вышел
             Objects.requireNonNull(Bukkit.getPlayer(callerName)).sendMessage(Config.getMessage("bad-duel-begin"));
             Objects.requireNonNull(Bukkit.getPlayer(targetName)).sendMessage(Config.getMessage("bad-duel-begin"));
-
             return true;
         }
 
         Player caller = Bukkit.getPlayer(callerName);
-        Player target = Bukkit.getPlayer(targetName);
 
         if(callerName.equals(targetName)){
             caller.sendMessage(Config.getMessage("commands.cant-accept-self"));
             return true;
         }
 
-        //TODO переместить перед тем как можо кинуть приглашение на дуэль
-        var optArena = plugin.engine.getEmptyArena();
-
-        if(optArena.isEmpty()){
-            target.sendMessage(Config.getMessage("game.no-empty-arena"));
-            caller.sendMessage(Config.getMessage("game.no-empty-arena"));
-            return true;
-        }
+        target.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING_OF);
 
         String callerMessage = Config.getMessage("commands.duel-accepted-caller").replace("%name%", targetName);
         target.sendMessage(callerMessage);
@@ -226,7 +223,14 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         String targetMessage = Config.getMessage("commands.duel-accepted-aim").replace("%name%", targetName);
         caller.sendMessage(targetMessage);
 
-        plugin.engine.getGame().startGame(caller, target, optArena.get());
+
+        var optArena = plugin.engine.getEmptyArena();
+        if(optArena.isEmpty()){
+            target.sendMessage(Config.getMessage("game.no-empty-arena"));
+            return true;
+        }
+
+        Bukkit.getScheduler().runTask(plugin, () -> plugin.engine.getGame().startGame(caller, target, optArena.get()));
 
         //plugin.engine.getGame().tryAcceptGame(player.getName(), args[1]);
         return true;
