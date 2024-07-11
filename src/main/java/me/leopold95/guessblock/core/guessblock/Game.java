@@ -2,11 +2,11 @@ package me.leopold95.guessblock.core.guessblock;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
+import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
-
-import java.util.ArrayList;
 
 public class Game {
     private GuessBlock plugin;
@@ -35,11 +35,46 @@ public class Game {
         caller.sendMessage(Config.getMessage("commands.game-select-guess-block-waiting"));
         target.sendMessage(Config.getMessage("commands.game-select-guess-block-waiting"));
 
+        //Bukkit.getScheduler().runTask(plugin, () -> selectGuessBlock(arena, caller, target));
+
+        //таймер ожидания выбора блоков для угадайки
+        long seleBlockTime = Config.getLong("time-to-select-enemy-block");
+        new SelectEnemyBlockTimer(plugin, 20, seleBlockTime, caller, target);
+
+        //провека, что обы игрока выбрали блок для угадайки
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if(!hasBothPlayersSelectedBlocks(caller, target)){
+                caller.sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
+                target.sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
+
+                endGame(arena, caller, target);
+            }
 
 
-        //TODO fix this
-        //int selectBlockTime = Config.getInt("time-to-select-enemy-block");
-        //new SelectEnemyBlockTimer(plugin, 0, 20);
+
+        }, seleBlockTime * 20 + 2);
+
+    }
+
+    public void endGame(Arena arena, Player caller, Player target){
+        caller.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
+        target.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
+
+        caller.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+        target.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+
+        caller.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
+        target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
+    }
+
+    private void selectGuessBlock(Arena arena, Player caller, Player target){
+
+    }
+
+    private boolean hasBothPlayersSelectedBlocks(Player caller, Player target){
+        boolean hasFirst = caller.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+        boolean hasSecond = target.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+        return (!hasFirst && !hasSecond);
     }
 
 

@@ -11,6 +11,8 @@ public class Keys {
     public NamespacedKey SELECTING_BLOCK_TO_GUESS;
     public NamespacedKey CURRENT_ENEMY;
 
+    public NamespacedKey SELECTED_GUESS_BLOCK;
+
     public NamespacedKey CAN_CLOSE_TRAPDOOR;
     public NamespacedKey FIST_TRAPDOOR;
     public NamespacedKey SECOND_TRAPDOOR;
@@ -22,6 +24,8 @@ public class Keys {
         DUEL_ACCEPT_WAITING_OF = new NamespacedKey(this.plugin, "DUEL_ACCEPT_WAITING");
         SELECTING_BLOCK_TO_GUESS = new NamespacedKey(this.plugin, "SELECTING_BLOCK_TO_GUESS");
         CURRENT_ENEMY = new NamespacedKey(this.plugin, "CURRENT_ENEMY");
+
+        SELECTED_GUESS_BLOCK = new NamespacedKey(this.plugin, "SELECTED_GUESS_BLOCK");
 
         CAN_CLOSE_TRAPDOOR = new NamespacedKey(this.plugin, "CAN_CLOSE_TRAPDOOR");
         FIST_TRAPDOOR = new NamespacedKey(this.plugin, "FIST_TRAPDOOR");

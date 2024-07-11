@@ -76,6 +76,9 @@ public class Config {
     public static int getInt(String path) {
         return config.getInt(path);
     }
+    public static long getLong(String path) {
+        return config.getLong(path);
+    }
 
 
     public static boolean getBoolean(String path) {

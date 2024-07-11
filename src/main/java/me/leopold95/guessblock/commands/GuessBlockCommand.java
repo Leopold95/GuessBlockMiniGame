@@ -89,12 +89,12 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         if(!player.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS))
             return true;
 
-        if(args.length != 1){
+        if(args.length != 2){
             player.sendMessage(Config.getMessage("commands.bad-selecting-block"));
             return true;
         }
 
-        Material material = Material.valueOf(args[0]);
+        Material material = Material.valueOf(args[1]);
 
         String enemyName = player.getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
         Player enemy = Bukkit.getPlayer(enemyName);

@@ -10,6 +10,7 @@ placeholders:
 
 game:
   no-empty-arena: "Зараж немає вільних арен. Зачейкайте"
+  end-guess-block-didnt-select: "Один або два гравці не обради який блок потрібно вгадати. Гру завершено"
 
 hover:
   accept-to-duel: "Натисніть для початку дуєлі з %name%"
@@ -23,7 +24,8 @@ commands:
   bad-duel-player: "Такого гравця не існуэ"
   duel-accept-waiting: "Ви хочете поча дуель з %name%. Зачекаэмо на його згоду"
   bad-set-center-args: "Введіть /%base% <%first%> <%second%>"
-  bad-selecting-block: "У Вас не моє моги використовувати цю команду, ви не граєте в дуєль зараз"
+
+  bad-selecting-block: "У Вас не моє змоги використовувати обрати блок для дуєлі, ви не граєте зараз"
 
   accept-you-dont-has-any-duels: "Зараз ви не очікуєте жодної дуєлі"
 
