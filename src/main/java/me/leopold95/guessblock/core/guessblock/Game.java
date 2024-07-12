@@ -3,6 +3,8 @@ package me.leopold95.guessblock.core.guessblock;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.TitlePart;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -35,7 +37,8 @@ public class Game {
         caller.sendMessage(Config.getMessage("commands.game-select-guess-block-waiting"));
         target.sendMessage(Config.getMessage("commands.game-select-guess-block-waiting"));
 
-        //Bukkit.getScheduler().runTask(plugin, () -> selectGuessBlock(arena, caller, target));
+        caller.sendTitle(Config.getMessage("game.game-select-guess-title"), "");
+        target.sendTitle(Config.getMessage("game.game-select-guess-title"), "");
 
         //таймер ожидания выбора блоков для угадайки
         long seleBlockTime = Config.getLong("time-to-select-enemy-block");
@@ -50,7 +53,15 @@ public class Game {
                 endGame(arena, caller, target);
             }
 
+            String callerBlock = caller.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+            String targetBlock = target.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
 
+            Material callerMaterial = Material.getMaterial(callerBlock);
+            Material targetMaterial = Material.getMaterial(targetBlock);
+
+            plugin.getLogger().warning(callerMaterial.toString() + ":" + targetMaterial.toString());
+
+            
 
         }, seleBlockTime * 20 + 2);
 
@@ -67,10 +78,12 @@ public class Game {
         target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
     }
 
-    private void selectGuessBlock(Arena arena, Player caller, Player target){
-
-    }
-
+    /**
+     * Проверяет что оба игрока выбрали блок для отгадки
+     * @param caller игрок 1
+     * @param target игрок 2
+     * @return true | false
+     */
     private boolean hasBothPlayersSelectedBlocks(Player caller, Player target){
         boolean hasFirst = caller.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS);
         boolean hasSecond = target.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS);

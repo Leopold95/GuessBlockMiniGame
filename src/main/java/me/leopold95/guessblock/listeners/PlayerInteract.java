@@ -29,6 +29,11 @@ public class PlayerInteract implements Listener {
         if(!(event.getClickedBlock().getBlockData() instanceof TrapDoor))
             return;
 
+        if(event.getPlayer().getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS)){
+            event.setCancelled(true);
+            return;
+        }
+
         PersistentDataContainer cdb = new CustomBlockData(event.getClickedBlock(), GuessBlock.getPlugin());
 
         if(!cdb.has(plugin.keys.CAN_CLOSE_TRAPDOOR))
@@ -50,8 +55,10 @@ public class PlayerInteract implements Listener {
 
             if(cdb.has(plugin.keys.FIST_TRAPDOOR)){
                 optional.get().getFirstBlocksList().remove(event.getClickedBlock());
+                plugin.getLogger().warning("f updated");
             } else if (cdb.has(plugin.keys.SECOND_TRAPDOOR)) {
                 optional.get().getSecondBlocksList().remove(event.getClickedBlock());
+                plugin.getLogger().warning("s updated");
             }
 
         }

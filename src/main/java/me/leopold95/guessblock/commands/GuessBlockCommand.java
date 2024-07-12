@@ -86,25 +86,41 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
     }
 
     private boolean onSetGuessBlocks(@NotNull String[] args, Player player){
-        if(!player.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS))
-            return true;
-
-        if(args.length != 2){
+        if(!player.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS)){
             player.sendMessage(Config.getMessage("commands.bad-selecting-block"));
             return true;
         }
 
-        Material material = Material.valueOf(args[1]);
+        if(args.length != 2){
+            String message = Config.getMessage("commands.bad-args")
+                    .replace("%base%", Commands.MG)
+                    .replace("%first%", Commands.MG_SET_BLOCK_TO_GUESS)
+                    .replace("%second%>", Config.getMessage("placeholders.material"));
+            player.sendMessage(message);
+            return true;
+        }
 
-        String enemyName = player.getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
-        Player enemy = Bukkit.getPlayer(enemyName);
+        try {
+            Material material = Material.valueOf(args[1]);
 
-        enemy.getPersistentDataContainer().set(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING, material.toString());
+            if(!material.isBlock()){
+                player.sendMessage(Config.getMessage("commands.bad-guess-block-non-block"));
+                return true;
+            }
 
-        player.sendMessage(Config.getMessage("commands.game-enemy-guess-block-selected").replace("%name%", material.toString()));
-        enemy.sendActionBar(Config.getMessage("commands.game-you-has-guess-block"));
+            String enemyName = player.getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+            Player enemy = Bukkit.getPlayer(enemyName);
 
-        player.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+            enemy.getPersistentDataContainer().set(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING, material.toString());
+
+            player.sendMessage(Config.getMessage("commands.game-enemy-guess-block-selected").replace("%name%", material.toString()));
+            enemy.sendActionBar(Config.getMessage("commands.game-you-has-guess-block"));
+
+            player.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+        }
+        catch (Exception exp){
+            player.sendMessage(Config.getMessage("commands.bad-guess-block-type"));
+        }
 
         return true;
     }
