@@ -3,14 +3,12 @@ package me.leopold95.guessblock.listeners;
 import customblockdata.CustomBlockData;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.guessblock.Arena;
-import org.bukkit.Bukkit;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.Optional;
 
@@ -35,15 +33,16 @@ public class PlayerInteract implements Listener {
             return;
         }
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            PersistentDataContainer cdb = new CustomBlockData(event.getClickedBlock(), GuessBlock.getPlugin());
+        plugin.getLogger().warning("1");
 
-            if(!cdb.has(plugin.keys.CAN_CLOSE_TRAPDOOR))
-                return;
+        PersistentDataContainer cdb = new CustomBlockData(event.getClickedBlock(), GuessBlock.getPlugin());
 
-            boolean canClose = cdb.get(plugin.keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN);
+        if(cdb.has(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR)){
+            boolean canClose1 = cdb.get(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN);
 
-            if(canClose){
+            if(canClose1 ){
+                plugin.getLogger().warning("2-1");
+
                 Optional<Arena> optional = plugin.engine.getArenas()
                         .stream()
                         .filter(a -> a.getFirstPlayer() == event.getPlayer() || a.getSecondPlayer() == event.getPlayer())
@@ -52,19 +51,45 @@ public class PlayerInteract implements Listener {
                 if(optional.isEmpty())
                     return;
 
-                cdb.set(plugin.keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, false);
+                plugin.getLogger().warning("3-1");
 
-                if(cdb.has(plugin.keys.FIST_TRAPDOOR)){
-                    optional.get().removeFirstTrapdoor(event.getClickedBlock());
-                    plugin.getLogger().warning("f updated");
-                } else if (cdb.has(plugin.keys.SECOND_TRAPDOOR)) {
-                    optional.get().removeSecondTrapdoor(event.getClickedBlock());
-                    plugin.getLogger().warning("s updated");
-                }
+                cdb.set(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, false);
+
+                optional.get().removeFirstTrapdoor(event.getClickedBlock());
+                plugin.getLogger().warning("f-1 updated");
             }
             else {
                 event.setCancelled(true);
             }
-        });
+        } else if (cdb.has(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR)) {
+            boolean canClose2 = cdb.get(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN);
+
+            if(canClose2){
+                plugin.getLogger().warning("2-2");
+
+                Optional<Arena> optional = plugin.engine.getArenas()
+                        .stream()
+                        .filter(a -> a.getFirstPlayer() == event.getPlayer() || a.getSecondPlayer() == event.getPlayer())
+                        .findFirst();
+
+                if(optional.isEmpty())
+                    return;
+
+                plugin.getLogger().warning("3-2");
+
+                cdb.set(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, false);
+
+                optional.get().removeFirstTrapdoor(event.getClickedBlock());
+                plugin.getLogger().warning("f-2 updated");
+            }
+            else {
+                event.setCancelled(true);
+            }
+        }
+
+
+
+
+
     }
 }

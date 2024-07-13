@@ -82,8 +82,8 @@ public class Arena {
 
             trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
-            data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
-            data.set(GuessBlock.getPlugin().keys.FIST_TRAPDOOR, PersistentDataType.BOOLEAN, true);
+            //data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
+            data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
 
         for(Location block: secondReplaceBlocks){
@@ -93,8 +93,8 @@ public class Arena {
 
             trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
-            data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
-            data.set(GuessBlock.getPlugin().keys.SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, true);
+            //data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
+            data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
     }
 

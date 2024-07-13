@@ -14,8 +14,8 @@ public class Keys {
     public NamespacedKey SELECTED_GUESS_BLOCK;
 
     public NamespacedKey CAN_CLOSE_TRAPDOOR;
-    public NamespacedKey FIST_TRAPDOOR;
-    public NamespacedKey SECOND_TRAPDOOR;
+    public NamespacedKey CAN_CLOSE_FIST_TRAPDOOR;
+    public NamespacedKey CAN_CLOSE_SECOND_TRAPDOOR;
 
     public Keys(GuessBlock plugin){
         this.plugin = plugin;
@@ -28,7 +28,7 @@ public class Keys {
         SELECTED_GUESS_BLOCK = new NamespacedKey(this.plugin, "SELECTED_GUESS_BLOCK");
 
         CAN_CLOSE_TRAPDOOR = new NamespacedKey(this.plugin, "CAN_CLOSE_TRAPDOOR");
-        FIST_TRAPDOOR = new NamespacedKey(this.plugin, "FIST_TRAPDOOR");
-        SECOND_TRAPDOOR = new NamespacedKey(this.plugin, "SECOND_TRAPDOOR");
+        CAN_CLOSE_FIST_TRAPDOOR = new NamespacedKey(this.plugin, "CAN_CLOSE_FIST_TRAPDOOR");
+        CAN_CLOSE_SECOND_TRAPDOOR = new NamespacedKey(this.plugin, "CAN_CLOSE_SECOND_TRAPDOOR");
     }
 }
