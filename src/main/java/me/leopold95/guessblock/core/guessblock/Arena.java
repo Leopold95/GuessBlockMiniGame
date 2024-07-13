@@ -25,8 +25,8 @@ public class Arena {
     private String name;
     private String type;
     private int replaceBlocksHeight;
-    private Location findableBlockFirst;
-    private Location findableBlockSecond;
+
+    private Location findableBlockFirst, findableBlockSecond;
     private Location center;
     @Setter
     private boolean isBusy;
@@ -36,7 +36,7 @@ public class Arena {
 
     private Location firstSpawn, secondSpawn;
 
-    private ArrayList<Block> firstBlocksList, secondBlocksList;
+    private ArrayList<Block> firstTrapdoorsList, secondTrapdoorsList;
 
     @Setter
     private Player firstPlayer, secondPlayer;
@@ -44,7 +44,31 @@ public class Arena {
     private final static String REPLACE_CONFIG_PART = "replace-location";
 
     public void clearBannedTrapdoors(){
-        firstBlocksList.clear();
+        firstTrapdoorsList.clear();
+    }
+
+    public void setFirstGuessBlock(Material material){
+        findableBlockFirst.getBlock().setType(material);
+    }
+
+    public void setSecondGuessBlock(Material material){
+        findableBlockSecond.getBlock().setType(material);
+    }
+
+    /**
+     * Используется для информирования, что былы скрыт один из люков во время игры
+     * @param trapdoor
+     */
+    public void removeFirstTrapdoor(Block trapdoor){
+        firstTrapdoorsList.remove(trapdoor);
+    }
+
+    /**
+     * Используется для информирования, что былы скрыт один из люков во время игры
+     * @param trapdoor
+     */
+    public void removeSecondTrapdoor(Block trapdoor){
+        secondTrapdoorsList.remove(trapdoor);
     }
 
     /**
@@ -54,7 +78,7 @@ public class Arena {
         for(Location block: firstReplaceBlocks){
             Location trapDoorLocation = block.clone().add(0, 1, 0);
 
-            firstBlocksList.add(trapDoorLocation.getBlock());
+            firstTrapdoorsList.add(trapDoorLocation.getBlock());
 
             trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
@@ -65,7 +89,7 @@ public class Arena {
         for(Location block: secondReplaceBlocks){
             Location trapDoorLocation = block.clone().add(0, 1, 0);
 
-            secondBlocksList.add(trapDoorLocation.getBlock());
+            secondTrapdoorsList.add(trapDoorLocation.getBlock());
 
             trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());

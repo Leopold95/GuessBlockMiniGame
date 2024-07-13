@@ -13,6 +13,7 @@ game:
   no-empty-arena: "Зараж немає вільних арен. Зачейкайте"
   end-guess-block-didnt-select: "Один або два гравці не обради який блок потрібно вгадати. Гру завершено"
   game-select-guess-title: "Оберіть блок для пошуку"
+  end: "Гру завершено"
 
 hover:
   accept-to-duel: "Натисніть для початку дуєлі з %name%"

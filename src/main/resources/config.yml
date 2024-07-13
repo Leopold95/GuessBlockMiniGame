@@ -59,6 +59,12 @@ arena-types:
   - arena2
 
 
+spawn-location:
+  world: world
+  x: 0
+  y: 120
+  z: 0
+
 #мир со всеми аренами
 arenas-world: world
 #высота на которой будут блоки под люками

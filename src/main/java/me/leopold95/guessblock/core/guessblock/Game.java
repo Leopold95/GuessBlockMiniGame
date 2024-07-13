@@ -3,9 +3,8 @@ package me.leopold95.guessblock.core.guessblock;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.TitlePart;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
@@ -51,6 +50,7 @@ public class Game {
                 target.sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
 
                 endGame(arena, caller, target);
+                return;
             }
 
             String callerBlock = caller.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
@@ -58,6 +58,9 @@ public class Game {
 
             Material callerMaterial = Material.getMaterial(callerBlock);
             Material targetMaterial = Material.getMaterial(targetBlock);
+
+            arena.setFirstGuessBlock(callerMaterial);
+            arena.setSecondGuessBlock(targetMaterial);
 
             plugin.getLogger().warning(callerMaterial.toString() + ":" + targetMaterial.toString());
 
@@ -68,6 +71,9 @@ public class Game {
     }
 
     public void endGame(Arena arena, Player caller, Player target){
+        caller.sendMessage(Config.getMessage("game.end"));
+        target.sendMessage(Config.getMessage("game.end"));
+
         caller.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
         target.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
 
@@ -76,6 +82,15 @@ public class Game {
 
         caller.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
         target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
+
+        Location spawnLocation = new Location(
+            Bukkit.getWorld(Config.getString("spawn-location.world")),
+            Config.getDouble("spawn-location.x"),
+            Config.getDouble("spawn-location.y"),
+            Config.getDouble("spawn-location.z"));
+
+        caller.teleport(spawnLocation);
+        target.teleport(spawnLocation);
     }
 
     /**
@@ -99,8 +114,8 @@ public class Game {
         arena.setFirstPlayer(null);
         arena.setSecondPlayer(null);
 
-        arena.getFirstBlocksList().clear();
-        arena.getSecondBlocksList().clear();
+        arena.getFirstTrapdoorsList().clear();
+        arena.getSecondTrapdoorsList().clear();
         arena.clearBannedTrapdoors();
 
         //update fidable blocks
