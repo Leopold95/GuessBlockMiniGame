@@ -7,6 +7,7 @@ public class Commands {
     public static final String MG_GIVE_UP = "giveup";
     public static final String MG_SET_CENTER = "set-center";
     public static final String MG_SET_BLOCK_TO_GUESS = "setblock";
+    public static final String MG_HELP = "help";
 
     public static final String MG_TESTING = "minigame_testing";
     public static final String MG_TESTING_LIST_ARENAS = "listarenas";

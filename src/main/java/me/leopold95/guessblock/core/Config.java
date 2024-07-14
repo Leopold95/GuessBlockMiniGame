@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,6 +92,16 @@ public class Config {
 
     public static String getMessage(String path) {
         return ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(path));
+    }
+
+    public static List<String> getMessageList(String path){
+        List<String> l = new ArrayList<>();
+
+        for(String line: messagesConfig.getStringList(path)){
+            l.add(ChatColor.translateAlternateColorCodes('&', line));
+        }
+
+        return l;
     }
 
     private static void createArenasConfig(String fileName, JavaPlugin plugin){

@@ -7,9 +7,35 @@ website: https://www.ukr-minecraft-plugin.fun/
 
 commands:
   minigame:
-    description: Команда мини игры "Угадай блок"
+    description: Команда міні гры "Відгадай блок"
+    permission: guessblock.*
+    permission-message: "У вас нет прав на использования этой команды"
+    aliases:
+      - mg
+      - guessblock
+      - gb
 
   minigame_testing:
     description: команды тестирования мимигры
     permission: guessblock.minigame.testing
     permission-message: "У вас нет прав на использования этой команды"
+
+permissions:
+  guessblock.*:
+    default: op
+    description: "Повний доступ до команд"
+  guessblock.duel:
+    default: op
+    description: "Дає змоги визвати на дуєль"
+  guessblock.accept:
+    default: true
+    description: "Дає змоги приняти дуєль"
+  guessblock.giveup:
+    default: true
+    description: "Дає змоги здатися"
+  guessblock.setblock:
+    default: true
+    description: "Дає змоги здатися"
+  guessblock.help:
+    default: true
+    description: "Деталі до плагіну"

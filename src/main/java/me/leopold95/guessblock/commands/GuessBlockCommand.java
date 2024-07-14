@@ -37,8 +37,8 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
                     Commands.MG_DUEL,
                     Commands.MG_GIVE_UP,
                     Commands.MG_ACCEPT,
-                    Commands.MG_SET_CENTER,
-                    Commands.MG_SET_BLOCK_TO_GUESS
+                    Commands.MG_SET_BLOCK_TO_GUESS,
+                    Commands.MG_HELP
             );
         }
 
@@ -67,19 +67,37 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
 
         switch (args[0]){
             case Commands.MG_DUEL -> {
+                if(!sender.hasPermission("guessblock.duel"))
+                    return false;
+
                 return onDuelCommand(args, player);
             }
 
             case Commands.MG_ACCEPT -> {
+                if(!sender.hasPermission("guessblock.accept"))
+                    return false;
+
                 return onAcceptCommand(args, player);
             }
 
-            case Commands.MG_SET_CENTER -> {
-                return onSetCenterCommand(args, player);
-            }
+//            case Commands.MG_SET_CENTER -> {
+//                return onSetCenterCommand(args, player);
+//            }
 
             case Commands.MG_SET_BLOCK_TO_GUESS -> {
-                onSetGuessBlocks(args, player);
+                if(!sender.hasPermission("guessblock.setblock"))
+                    return false;
+
+                return onSetGuessBlocks(args, player);
+            }
+
+            case Commands.MG_HELP -> {
+                if(!sender.hasPermission("guessblock.help"))
+                    return false;
+
+                for(String line: Config.getMessageList("help")){
+                    sender.sendMessage(line);
+                }
             }
         }
 
