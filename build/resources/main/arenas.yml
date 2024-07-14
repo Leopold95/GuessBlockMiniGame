@@ -1,0 +1,27 @@
+arenas:
+  '1':
+    name: A1
+    type: arena1
+    replace-blocks-height: -5
+    enemy-block-loc_1:
+      x: 0
+      y: -34
+      z: -11
+    enemy-block-loc_2:
+      x: -2
+      y: -34
+      z: -11
+    center:
+      x: -1
+      y: -31
+      z: -11
+    spawn:
+      first:
+        x: 1
+        y: 3
+        z: 5
+      second:
+        x: -1
+        y: -3
+        z: -5
+

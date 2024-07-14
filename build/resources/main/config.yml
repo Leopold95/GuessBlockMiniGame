@@ -1,0 +1,120 @@
+debug: true
+
+minigame-duel-accept-time: 120
+
+#час за який гравці мають обрати блоки, які їч ворогу потрібно вгадати
+time-to-select-enemy-block: 10
+
+blocks-list:
+  - STONE
+  - GRASS_BLOCK
+  - DIRT
+  - COBBLESTONE
+  - OAK_PLANKS
+  - SPRUCE_PLANKS
+  - BIRCH_PLANKS
+  - JUNGLE_PLANKS
+  - ACACIA_PLANKS
+  - DARK_OAK_PLANKS
+  - OAK_LOG
+  - SPRUCE_LOG
+  - BIRCH_LOG
+  - JUNGLE_LOG
+  - ACACIA_LOG
+  - DARK_OAK_LOG
+  - SAND
+  - RED_SAND
+  - GRAVEL
+  - GOLD_ORE
+  - IRON_ORE
+  - COAL_ORE
+  - OAK_LEAVES
+  - SPRUCE_LEAVES
+  - BIRCH_LEAVES
+  - JUNGLE_LEAVES
+  - ACACIA_LEAVES
+  - DARK_OAK_LEAVES
+  - SPONGE
+  - GLASS
+  - LAPIS_ORE
+  - LAPIS_BLOCK
+  - DISPENSER
+  - SANDSTONE
+  - CHISELED_SANDSTONE
+  - SMOOTH_SANDSTONE
+  - RED_SANDSTONE
+  - CHISELED_RED_SANDSTONE
+  - SMOOTH_RED_SANDSTONE
+  - NOTE_BLOCK
+  - STICKY_PISTON
+  - COBWEB
+  - FERN
+  - DEAD_BUSH
+  - SEAGRASS
+  - SEA_PICKLE
+  - WHITE_WOOL
+
+arena-types:
+  - arena1
+  - arena2
+
+sounds:
+  duel-throw-to-target: #звук який буде у того, кому кинули дуєль
+    name: ""
+    volume: 100
+  duel-accept-to-caller: #звук буде у того, хто кинув дуєль
+    name: ""
+    volume: 100
+  game-selecting-blocks-start: #звук початка вибору блоків(фактично початку гри)
+    name: ""
+    volume: 100
+  game-started: #звук після вдачного вибору блоків
+    name: ""
+    volume: 100
+  game-ended: #звук завершення гри
+    name: ""
+    volume: 100
+
+
+spawn-location:
+  world: world
+  x: 0
+  y: 120
+  z: 0
+
+#мир со всеми аренами
+arenas-world: world
+#высота на которой будут блоки под люками
+arenas-replace-blocks-height: 50
+
+replace-location:
+  1:
+    type: arena1
+    replace-list:
+      first: #x:y
+        - "3:1"
+        - "5:1"
+        - "7:1"
+        - "9:1"
+
+        - "3:-1"
+        - "5:-1"
+        - "7:-1"
+        - "9:-1"
+      second: #x:y
+        - "-3:-1"
+        - "-5:-1"
+        - "-7:-1"
+        - "-9:-1"
+
+        - "-3:1"
+        - "-5:1"
+        - "-7:1"
+        - "-9:1"
+  2:
+    type: arena2
+    replace-list:
+      first: #x:y
+        - "3:1"
+      second: #x:y
+        - "3:1"
