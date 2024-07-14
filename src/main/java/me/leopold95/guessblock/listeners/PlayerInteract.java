@@ -3,7 +3,9 @@ package me.leopold95.guessblock.listeners;
 import customblockdata.CustomBlockData;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.guessblock.Arena;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -33,61 +35,76 @@ public class PlayerInteract implements Listener {
             return;
         }
 
-        plugin.getLogger().warning("1");
-
         PersistentDataContainer cdb = new CustomBlockData(event.getClickedBlock(), GuessBlock.getPlugin());
 
         //TODO somebody pls fix this shit
         if(cdb.has(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR)){
             boolean canClose1 = cdb.get(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN);
 
-            if(canClose1 ){
-                plugin.getLogger().warning("2-1");
+            trapdoorClicked(canClose1, cdb, event, plugin.keys.CAN_CLOSE_FIST_TRAPDOOR);
 
-                String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
-
-                Optional<Arena> optional = plugin.engine.getArenas()
-                        .stream()
-                        .filter(a -> a.getSecondPlayer().getName().equals(enemyName))
-                        .findFirst();
-
-                if(optional.isEmpty())
-                    return;
-
-                plugin.getLogger().warning("3-1");
-
-                cdb.set(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, false);
-
-                optional.get().removeFirstTrapdoor(event.getClickedBlock());
-            }
-            else {
-                event.setCancelled(true);
-            }
+//            if(canClose1 ){
+//                String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+//
+//                Optional<Arena> optional = plugin.engine.getArenas()
+//                        .stream()
+//                        .filter(a -> a.getSecondPlayer().getName().equals(enemyName))
+//                        .findFirst();
+//
+//                if(optional.isEmpty())
+//                    return;
+//
+//                cdb.set(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, false);
+//
+//                optional.get().removeFirstTrapdoor(event.getClickedBlock());
+//            }
+//            else {
+//                event.setCancelled(true);
+//            }
         } else if (cdb.has(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR)) {
             boolean canClose2 = cdb.get(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN);
 
-            if(canClose2){
-                plugin.getLogger().warning("2-2");
+            trapdoorClicked(canClose2, cdb, event, plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR);
 
-                String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+//            if(canClose2){
+//                String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+//
+//                Optional<Arena> optional = plugin.engine.getArenas()
+//                        .stream()
+//                        .filter(a -> a.getFirstPlayer().getName().equals(enemyName))
+//                        .findFirst();
+//
+//                if(optional.isEmpty())
+//                    return;
+//
+//                cdb.set(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, false);
+//
+//                optional.get().removeSecondTrapdoor(event.getClickedBlock());
+//            }
+//            else {
+//                event.setCancelled(true);
+//            }
+        }
+    }
 
-                Optional<Arena> optional = plugin.engine.getArenas()
-                        .stream()
-                        .filter(a -> a.getFirstPlayer().getName().equals(enemyName))
-                        .findFirst();
+    private void trapdoorClicked(boolean canClose, PersistentDataContainer cont, PlayerInteractEvent event, NamespacedKey key){
+        if(canClose){
+            String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
 
-                if(optional.isEmpty())
-                    return;
+            Optional<Arena> optional = plugin.engine.getArenas()
+                    .stream()
+                    .filter(a -> a.getFirstPlayer().getName().equals(enemyName))
+                    .findFirst();
 
-                plugin.getLogger().warning("3-2");
+            if(optional.isEmpty())
+                return;
 
-                cdb.set(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, false);
+            cont.set(key, PersistentDataType.BOOLEAN, false);
 
-                optional.get().removeSecondTrapdoor(event.getClickedBlock());
-            }
-            else {
-                event.setCancelled(true);
-            }
+            optional.get().removeSecondTrapdoor(event.getClickedBlock());
+        }
+        else {
+            event.setCancelled(true);
         }
     }
 }

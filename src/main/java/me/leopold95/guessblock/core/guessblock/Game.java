@@ -7,8 +7,11 @@ import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.ArrayList;
 
 public class Game {
     private GuessBlock plugin;
@@ -103,6 +106,36 @@ public class Game {
 
         arena.setFirstPlayer(null);
         arena.setSecondPlayer(null);
+    }
+
+
+    /**
+     * Когда искомый блок был закрыт люком
+     * @param arena арена
+     * @param findableBlock блок на арене, кторый нужно найти
+     * @param trapdoors список открытых люков
+     * @param whoRemoved игрок, который закрыд люк
+     * @param enemy враг, закрывшего люк игрока
+     */
+    public void onTrapdoorRemoved(Arena arena, Location findableBlock, ArrayList<Block> trapdoors, Player whoRemoved, Player enemy){
+        if(trapdoors.size() == 1){
+            Material lastBlock = trapdoors.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
+            GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlock.getBlock().getType());
+
+            String guessStrMaterial = enemy.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+            Material guessMaterial = Material.valueOf(guessStrMaterial);
+
+            if(lastBlock.name().equals(guessMaterial.name())){
+                whoRemoved.sendMessage(Config.getMessage("game.win"));
+                enemy.sendMessage(Config.getMessage("game.loose"));
+                GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
+            }
+            else {
+                whoRemoved.sendMessage(Config.getMessage("game.loose"));
+                enemy.sendMessage(Config.getMessage("game.win"));
+                GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
+            }
+        }
     }
 
     /**

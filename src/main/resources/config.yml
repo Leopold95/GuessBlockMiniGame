@@ -76,9 +76,6 @@ sounds:
     volume: 100
 
 
-
-
-
 spawn-location:
   world: world
   x: 0
