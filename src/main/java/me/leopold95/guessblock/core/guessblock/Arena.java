@@ -25,19 +25,13 @@ public class Arena {
     private String name;
     private String type;
     private int replaceBlocksHeight;
-
     private Location findableBlockFirst, findableBlockSecond;
     private Location center;
     @Setter
     private boolean isBusy;
-
-    private ArrayList<Location> firstReplaceBlocks;
-    private ArrayList<Location> secondReplaceBlocks;
-
+    private ArrayList<Location> firstReplaceBlocks, secondReplaceBlocks;
     private Location firstSpawn, secondSpawn;
-
     private ArrayList<Block> firstTrapdoorsList, secondTrapdoorsList;
-
     @Setter
     private Player firstPlayer, secondPlayer;
 
@@ -61,6 +55,23 @@ public class Arena {
      */
     public void removeFirstTrapdoor(Block trapdoor){
         firstTrapdoorsList.remove(trapdoor);
+
+        if(firstTrapdoorsList.size() == 1){
+            Material lastBlock = firstTrapdoorsList.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
+            GuessBlock.getPlugin().getLogger().warning("last first block " + lastBlock.name() + " find " + findableBlockSecond.getBlock().getType());
+
+            String guessStrMaterial = firstPlayer.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+            Material guessMaterial = Material.valueOf(guessStrMaterial);
+
+            if(lastBlock.name().equals(guessMaterial.name())){
+                firstPlayer.sendMessage(Config.getMessage("game.win"));
+                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
+            }
+            else {
+                secondPlayer.sendMessage(Config.getMessage("game.loose"));
+                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
+            }
+        }
     }
 
     /**
@@ -69,6 +80,23 @@ public class Arena {
      */
     public void removeSecondTrapdoor(Block trapdoor){
         secondTrapdoorsList.remove(trapdoor);
+
+        if(secondTrapdoorsList.size() == 1){
+            Material lastBlock = secondTrapdoorsList.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
+            GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlockSecond.getBlock().getType());
+
+            String guessStrMaterial = secondPlayer.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+            Material guessMaterial = Material.valueOf(guessStrMaterial);
+
+            if(lastBlock.name().equals(guessMaterial.name())){
+                secondPlayer.sendMessage(Config.getMessage("game.win"));
+                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
+            }
+            else {
+                firstPlayer.sendMessage(Config.getMessage("game.loose"));
+                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
+            }
+        }
     }
 
     /**
@@ -203,7 +231,6 @@ public class Arena {
             return null;
         }
 
-
         for (String key: partSection.getKeys(false)){
             String type = Config.getString(REPLACE_CONFIG_PART + "." + key + ".type");
 
@@ -226,13 +253,6 @@ public class Arena {
                     plugin.getLogger().warning("Cant parse replace location '"+ arenaName+"': " + exp.getMessage());
                 }
             }
-        }
-
-        for(String key: partSection.getKeys(false)){
-            int x = Config.getInt(partInCfg + "." + key + ".x");
-            int z = Config.getInt(partInCfg + "." + key + ".z");
-
-            list.add(blocksHeight.clone().add(x, 0, z));
         }
 
         return list;

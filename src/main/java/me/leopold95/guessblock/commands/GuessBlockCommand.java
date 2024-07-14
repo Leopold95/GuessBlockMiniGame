@@ -2,6 +2,7 @@ package me.leopold95.guessblock.commands;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
+import me.leopold95.guessblock.core.SoundPlayer;
 import me.leopold95.guessblock.enums.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -193,6 +194,7 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
 
         targetPlayer.sendMessage(callDuel);
         caller.sendMessage(Config.getMessage("commands.duel-accept-waiting").replace("%name%", targetName));
+        SoundPlayer.play(targetPlayer, "duel-throw-to-target");
 
         return true;
     }
@@ -246,9 +248,9 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             return true;
         }
 
+        SoundPlayer.play(caller, "duel-accept-to-caller");
         Bukkit.getScheduler().runTask(plugin, () -> plugin.engine.getGame().startGame(caller, target, optArena.get()));
 
-        //plugin.engine.getGame().tryAcceptGame(player.getName(), args[1]);
         return true;
     }
 }

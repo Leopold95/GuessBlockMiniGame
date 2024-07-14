@@ -37,15 +37,18 @@ public class PlayerInteract implements Listener {
 
         PersistentDataContainer cdb = new CustomBlockData(event.getClickedBlock(), GuessBlock.getPlugin());
 
+        //TODO somebody pls fix this shit
         if(cdb.has(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR)){
             boolean canClose1 = cdb.get(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN);
 
             if(canClose1 ){
                 plugin.getLogger().warning("2-1");
 
+                String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+
                 Optional<Arena> optional = plugin.engine.getArenas()
                         .stream()
-                        .filter(a -> a.getFirstPlayer() == event.getPlayer() || a.getSecondPlayer() == event.getPlayer())
+                        .filter(a -> a.getSecondPlayer().getName().equals(enemyName))
                         .findFirst();
 
                 if(optional.isEmpty())
@@ -56,20 +59,21 @@ public class PlayerInteract implements Listener {
                 cdb.set(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, false);
 
                 optional.get().removeFirstTrapdoor(event.getClickedBlock());
-                plugin.getLogger().warning("f-1 updated");
             }
             else {
                 event.setCancelled(true);
             }
         } else if (cdb.has(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR)) {
-            boolean canClose2 = cdb.get(plugin.keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN);
+            boolean canClose2 = cdb.get(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN);
 
             if(canClose2){
                 plugin.getLogger().warning("2-2");
 
+                String enemyName = event.getPlayer().getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+
                 Optional<Arena> optional = plugin.engine.getArenas()
                         .stream()
-                        .filter(a -> a.getFirstPlayer() == event.getPlayer() || a.getSecondPlayer() == event.getPlayer())
+                        .filter(a -> a.getFirstPlayer().getName().equals(enemyName))
                         .findFirst();
 
                 if(optional.isEmpty())
@@ -79,17 +83,11 @@ public class PlayerInteract implements Listener {
 
                 cdb.set(plugin.keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, false);
 
-                optional.get().removeFirstTrapdoor(event.getClickedBlock());
-                plugin.getLogger().warning("f-2 updated");
+                optional.get().removeSecondTrapdoor(event.getClickedBlock());
             }
             else {
                 event.setCancelled(true);
             }
         }
-
-
-
-
-
     }
 }

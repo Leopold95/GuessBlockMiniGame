@@ -58,6 +58,26 @@ arena-types:
   - arena1
   - arena2
 
+sounds:
+  duel-throw-to-target: #звук який буде у того, кому кинули дуєль
+    name: ""
+    volume: 100
+  duel-accept-to-caller: #звук буде у того, хто кинув дуєль
+    name: ""
+    volume: 100
+  game-selecting-blocks-start: #звук початка вибору блоків(фактично початку гри)
+    name: ""
+    volume: 100
+  game-started: #звук після вдачного вибору блоків
+    name: ""
+    volume: 100
+  game-ended: #звук завершення гри
+    name: ""
+    volume: 100
+
+
+
+
 
 spawn-location:
   world: world

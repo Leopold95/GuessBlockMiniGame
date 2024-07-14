@@ -2,6 +2,7 @@ package me.leopold95.guessblock.core.guessblock;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
+import me.leopold95.guessblock.core.SoundPlayer;
 import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,6 +40,9 @@ public class Game {
         caller.sendTitle(Config.getMessage("game.game-select-guess-title"), "");
         target.sendTitle(Config.getMessage("game.game-select-guess-title"), "");
 
+        SoundPlayer.play(caller, "game-selecting-blocks-start");
+        SoundPlayer.play(target, "game-selecting-blocks-start");
+
         //таймер ожидания выбора блоков для угадайки
         long seleBlockTime = Config.getLong("time-to-select-enemy-block");
         new SelectEnemyBlockTimer(plugin, 20, seleBlockTime, caller, target);
@@ -53,18 +57,20 @@ public class Game {
                 return;
             }
 
+            arena.setFirstPlayer(caller);
+            arena.setSecondPlayer(target);
+
             String callerBlock = caller.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
             String targetBlock = target.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
 
-            Material callerMaterial = Material.getMaterial(callerBlock);
-            Material targetMaterial = Material.getMaterial(targetBlock);
+            arena.setFirstGuessBlock(Material.getMaterial(callerBlock));
+            arena.setSecondGuessBlock(Material.getMaterial(targetBlock));
 
-            arena.setFirstGuessBlock(callerMaterial);
-            arena.setSecondGuessBlock(targetMaterial);
+            caller.sendMessage(Config.getMessage("game.start"));
+            target.sendMessage(Config.getMessage("game.start"));
 
-            plugin.getLogger().warning(callerMaterial.toString() + ":" + targetMaterial.toString());
-
-            
+            SoundPlayer.play(caller, "game-started");
+            SoundPlayer.play(target, "game-started");
 
         }, seleBlockTime * 20 + 2);
 
@@ -83,6 +89,9 @@ public class Game {
         caller.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
         target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
 
+        SoundPlayer.play(caller, "game-ended");
+        SoundPlayer.play(target, "game-ended");
+
         Location spawnLocation = new Location(
             Bukkit.getWorld(Config.getString("spawn-location.world")),
             Config.getDouble("spawn-location.x"),
@@ -91,6 +100,9 @@ public class Game {
 
         caller.teleport(spawnLocation);
         target.teleport(spawnLocation);
+
+        arena.setFirstPlayer(null);
+        arena.setSecondPlayer(null);
     }
 
     /**
@@ -99,7 +111,7 @@ public class Game {
      * @param target игрок 2
      * @return true | false
      */
-    private boolean hasBothPlayersSelectedBlocks(Player caller, Player target){
+    public boolean hasBothPlayersSelectedBlocks(Player caller, Player target){
         boolean hasFirst = caller.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS);
         boolean hasSecond = target.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS);
         return (!hasFirst && !hasSecond);

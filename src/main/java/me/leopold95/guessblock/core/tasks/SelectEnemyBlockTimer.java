@@ -1,5 +1,6 @@
 package me.leopold95.guessblock.core.tasks;
 
+import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.abstraction.RepeatingTask;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -11,11 +12,16 @@ public class SelectEnemyBlockTimer extends RepeatingTask {
     private long maxSeconds;
     private Plugin plugin;
 
+    private Player caller, target;
+
     public SelectEnemyBlockTimer(Plugin plugin, int taskTickDelay, long maxSeconds, Player caller, Player target) {
         super(plugin, 0, taskTickDelay);
 
         this.plugin = plugin;
         this.maxSeconds = maxSeconds;
+
+        this.caller = caller;
+        this.target = target;
 
         run();
     }
@@ -27,7 +33,7 @@ public class SelectEnemyBlockTimer extends RepeatingTask {
             return;
         }
 
-        plugin.getLogger().warning("updating");
+
 
         secondsPassed++;
     }
