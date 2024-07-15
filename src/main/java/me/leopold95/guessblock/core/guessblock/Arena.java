@@ -32,7 +32,7 @@ public class Arena {
     private Location center;
     @Setter
     private boolean isBusy;
-    private ArrayList<Location> firstReplaceBlocks, secondReplaceBlocks;
+    private ArrayList<Block> firstReplaceBlocks, secondReplaceBlocks;
     private Location firstSpawn, secondSpawn;
     private ArrayList<Block> firstTrapdoorsList, secondTrapdoorsList;
     @Setter
@@ -40,14 +40,42 @@ public class Arena {
 
     private final static String REPLACE_CONFIG_PART = "replace-location";
 
-    public void clearBannedTrapdoors(){
-        firstTrapdoorsList.clear();
+    /**
+     * Проверяет все текущие блоки в слотах рандома, и если нету блока для отгадки -
+     * заменяет рандомный блок на этот
+     */
+    public void setBlocksToGuess(){
+        if(!firstReplaceBlocks.contains(findableBlockFirst.getBlock())){
+            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
+            firstReplaceBlocks.set(random, findableBlockFirst.getBlock());
+        }
+
+        if(!secondTrapdoorsList.contains(findableBlockSecond.getBlock())){
+            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
+            secondTrapdoorsList.set(random, findableBlockSecond.getBlock());
+        }
     }
 
+    /**
+     * Очищает списки люков
+     */
+    public void clearBannedTrapdoors(){
+        firstTrapdoorsList.clear();
+        secondTrapdoorsList.clear();
+    }
+
+    /**
+     * Устанавливает материал первого блока для отгаки
+     * @param material
+     */
     public void setFirstGuessBlock(Material material){
         findableBlockFirst.getBlock().setType(material);
     }
 
+    /**
+     * Устанавливает материал второго блока для отгаки
+     * @param material
+     */
     public void setSecondGuessBlock(Material material){
         findableBlockSecond.getBlock().setType(material);
     }
@@ -74,8 +102,8 @@ public class Arena {
      * Устанавливает люки над блоками для отгадки
      */
     public void setTrapdoors(){
-        for(Location block: firstReplaceBlocks){
-            Location trapDoorLocation = block.clone().add(0, 1, 0);
+        for(Block block: firstReplaceBlocks){
+            Location trapDoorLocation = block.getLocation().clone().add(0, 1, 0);
 
             firstTrapdoorsList.add(trapDoorLocation.getBlock());
 
@@ -90,8 +118,8 @@ public class Arena {
             data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
 
-        for(Location block: secondReplaceBlocks){
-            Location trapDoorLocation = block.clone().add(0, 1, 0);
+        for(Block block: secondReplaceBlocks){
+            Location trapDoorLocation = block.getLocation().clone().add(0, 1, 0);
 
             secondTrapdoorsList.add(trapDoorLocation.getBlock());
 
@@ -101,7 +129,6 @@ public class Arena {
             openable.setOpen(true);
             openable.setFacing(BlockFace.WEST);
             trapDoorLocation.getBlock().setBlockData(openable);
-
 
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
             data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, true);
@@ -125,16 +152,16 @@ public class Arena {
     public void updateRandomBlocks(List<Material> randomList){
         Random random = new Random();
 
-        for(Location block: firstReplaceBlocks){
+        for(Block block: firstReplaceBlocks){
             int randomMaterialId = random.nextInt(0, randomList.size());
             Material randomMaterial = randomList.get(randomMaterialId);
-            block.getBlock().setType(randomMaterial);
+            block.setType(randomMaterial);
         }
 
-        for(Location block: secondReplaceBlocks){
+        for(Block block: secondReplaceBlocks){
             int randomMaterialId = random.nextInt(0, randomList.size());
             Material randomMaterial = randomList.get(randomMaterialId);
-            block.getBlock().setType(randomMaterial);
+            block.setType(randomMaterial);
         }
     }
 
@@ -200,8 +227,8 @@ public class Arena {
      * Генерирует список позиций блоков, которые нужно заменить
      * @return null иил список позиуий блоков, которые нужно заменить
      */
-    private static ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
-        ArrayList<Location> list = new ArrayList<>();
+    private static ArrayList<Block> loadReplaceBlocks(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
+        ArrayList<Block> list = new ArrayList<>();
 
         Location blocksHeight = arenaCenter.clone().add(0, replaceHeight, 0);
 
@@ -229,7 +256,7 @@ public class Arena {
                     double x = Double.parseDouble(p[0]);
                     double z = Double.parseDouble(p[1]);
 
-                    list.add(blocksHeight.clone().add(x, 0, z));
+                    list.add(blocksHeight.clone().add(x, 0, z).getBlock());
                 }
                 catch (Exception exp){
                     plugin.getLogger().warning("Cant parse replace location '"+ arenaName+"': " + exp.getMessage());

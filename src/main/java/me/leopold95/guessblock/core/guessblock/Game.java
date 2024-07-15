@@ -183,5 +183,7 @@ public class Game {
 
         //update hatches
         arena.setTrapdoors();
+
+        arena.setBlocksToGuess();
     }
 }
