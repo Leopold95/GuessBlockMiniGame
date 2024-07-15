@@ -144,28 +144,6 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         return true;
     }
 
-    private boolean onSetCenterCommand(@NotNull String[] args, Player player){
-        if(args.length != 2){
-            String message = Config.getMessage("commands.bad-set-center-args")
-                            .replace("%base%", Commands.MG)
-                            .replace("%first%", Commands.MG_SET_CENTER)
-                            .replace("%second%", Config.getMessage("placeholders.arena-id"));
-            player.sendMessage(message);
-            return true;
-        }
-
-        String arenaIdStr = args[1];
-        int arenaId = Integer.parseInt(arenaIdStr);
-
-        double x = player.getLocation().getBlockX();
-        double y = player.getLocation().getBlockY();
-        double z = player.getLocation().getBlockZ();
-
-
-
-        return true;
-    }
-
     private boolean onDuelCommand(@NotNull String @NotNull [] args, Player caller){
         if (args.length != 2){
             String message = Config.getMessage("commands.bad-args")
@@ -198,7 +176,7 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
 
         String message = Config.getMessage("called-for-minigame")
                 .replace("%base%", Commands.MG)
-                .replace("%first%", Commands.MG_DUEL)
+                .replace("%first%", Commands.MG_ACCEPT)
                 .replace("%second%", "<" + targetPlayer.getName() + ">");
         Component callDuel = Component.text(message)
                 .clickEvent(ClickEvent.runCommand("/" + Commands.MG + " " + Commands.MG_ACCEPT + " " + caller.getName()))
@@ -221,7 +199,7 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         if (args.length != 2){
             String message = Config.getMessage("commands.bad-args")
                     .replace("%base%", Commands.MG)
-                    .replace("%first%", Commands.MG_DUEL)
+                    .replace("%first%", Commands.MG_ACCEPT)
                     .replace("%second%", "<" + Config.getMessage("placeholders.player") + ">");
 
             target.sendMessage(message);

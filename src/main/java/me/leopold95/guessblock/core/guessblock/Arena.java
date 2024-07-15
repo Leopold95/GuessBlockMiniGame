@@ -8,6 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Openable;
+import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -55,28 +58,7 @@ public class Arena {
      */
     public void removeFirstTrapdoor(Block trapdoor){
         firstTrapdoorsList.remove(trapdoor); //TODO убрать из коасса арены
-
-        GuessBlock.getPlugin().engine.getGame().onTrapdoorRemoved(this, findableBlockFirst, firstTrapdoorsList, secondPlayer, firstPlayer);
-
-
-//        if(firstTrapdoorsList.size() == 1){
-//            Material lastBlock = firstTrapdoorsList.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
-//            GuessBlock.getPlugin().getLogger().warning("last first block " + lastBlock.name() + " find " + findableBlockSecond.getBlock().getType());
-//
-//            String guessStrMaterial = firstPlayer.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
-//            Material guessMaterial = Material.valueOf(guessStrMaterial);
-//
-//            if(lastBlock.name().equals(guessMaterial.name())){
-//                firstPlayer.sendMessage(Config.getMessage("game.win"));
-//                secondPlayer.sendMessage(Config.getMessage("game.loose"));
-//                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
-//            }
-//            else {
-//                firstPlayer.sendMessage(Config.getMessage("game.loose"));
-//                secondPlayer.sendMessage(Config.getMessage("game.win"));
-//                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
-//            }
-//        }
+        GuessBlock.getPlugin().engine.getGame().onTrapdoorRemoved(this, findableBlockFirst, firstTrapdoorsList, firstPlayer, secondPlayer);
     }
 
     /**
@@ -85,41 +67,26 @@ public class Arena {
      */
     public void removeSecondTrapdoor(Block trapdoor){
         secondTrapdoorsList.remove(trapdoor); //TODO убрать из коасса арены
-
         GuessBlock.getPlugin().engine.getGame().onTrapdoorRemoved(this, findableBlockSecond, secondTrapdoorsList, secondPlayer, firstPlayer);
-
-//        if(secondTrapdoorsList.size() == 1){
-//            Material lastBlock = secondTrapdoorsList.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
-//            GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlockSecond.getBlock().getType());
-//
-//            String guessStrMaterial = secondPlayer.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
-//            Material guessMaterial = Material.valueOf(guessStrMaterial);
-//
-//            if(lastBlock.name().equals(guessMaterial.name())){
-//                secondPlayer.sendMessage(Config.getMessage("game.win"));
-//                firstPlayer.sendMessage(Config.getMessage("game.loose"));
-//                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
-//            }
-//            else {
-//                secondPlayer.sendMessage(Config.getMessage("game.loose"));
-//                firstPlayer.sendMessage(Config.getMessage("game.win"));
-//                GuessBlock.getPlugin().engine.getGame().endGame(this, firstPlayer, secondPlayer);
-//            }
-//        }
     }
 
     /**
      * Устанавливает люки над блоками для отгадки
      */
-    public void setTrapDors(){
+    public void setTrapdoors(){
         for(Location block: firstReplaceBlocks){
             Location trapDoorLocation = block.clone().add(0, 1, 0);
 
             firstTrapdoorsList.add(trapDoorLocation.getBlock());
 
             trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
+
+            TrapDoor openable = (TrapDoor) trapDoorLocation.getBlock().getBlockData();
+            openable.setOpen(true);
+            openable.setFacing(BlockFace.EAST);
+            trapDoorLocation.getBlock().setBlockData(openable);
+
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
-            //data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
             data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
 
@@ -129,8 +96,14 @@ public class Arena {
             secondTrapdoorsList.add(trapDoorLocation.getBlock());
 
             trapDoorLocation.getBlock().setType(Material.ACACIA_TRAPDOOR);
+
+            TrapDoor openable = (TrapDoor) trapDoorLocation.getBlock().getBlockData();
+            openable.setOpen(true);
+            openable.setFacing(BlockFace.WEST);
+            trapDoorLocation.getBlock().setBlockData(openable);
+
+
             PersistentDataContainer data = new CustomBlockData(trapDoorLocation.getBlock(), GuessBlock.getPlugin());
-            //data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_TRAPDOOR, PersistentDataType.BOOLEAN, true);
             data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_SECOND_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
     }

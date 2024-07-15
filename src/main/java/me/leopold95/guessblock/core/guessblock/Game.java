@@ -10,11 +10,16 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 
 public class Game {
     private GuessBlock plugin;
+
+    private PotionEffect blindness = new PotionEffect(PotionEffectType.BLINDNESS, 99999, 1);
+
     public Game(GuessBlock plugin){
         this.plugin = plugin;
     }
@@ -46,6 +51,9 @@ public class Game {
         SoundPlayer.play(caller, "game-selecting-blocks-start");
         SoundPlayer.play(target, "game-selecting-blocks-start");
 
+        caller.addPotionEffect(blindness);
+        target.addPotionEffect(blindness);
+
         //таймер ожидания выбора блоков для угадайки
         long seleBlockTime = Config.getLong("time-to-select-enemy-block");
         new SelectEnemyBlockTimer(plugin, 20, seleBlockTime, caller, target);
@@ -62,6 +70,9 @@ public class Game {
 
             arena.setFirstPlayer(caller);
             arena.setSecondPlayer(target);
+
+            caller.removePotionEffect(PotionEffectType.BLINDNESS);
+            target.removePotionEffect(PotionEffectType.BLINDNESS);
 
             String callerBlock = caller.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
             String targetBlock = target.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
@@ -118,23 +129,24 @@ public class Game {
      * @param enemy враг, закрывшего люк игрока
      */
     public void onTrapdoorRemoved(Arena arena, Location findableBlock, ArrayList<Block> trapdoors, Player whoRemoved, Player enemy){
-        if(trapdoors.size() == 1){
-            Material lastBlock = trapdoors.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
-            GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlock.getBlock().getType());
+        if(trapdoors.size() != 1)
+            return;
 
-            String guessStrMaterial = enemy.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
-            Material guessMaterial = Material.valueOf(guessStrMaterial);
+        Material lastBlock = trapdoors.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
+        GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlock.getBlock().getType());
 
-            if(lastBlock.name().equals(guessMaterial.name())){
-                whoRemoved.sendMessage(Config.getMessage("game.win"));
-                enemy.sendMessage(Config.getMessage("game.loose"));
-                GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
-            }
-            else {
-                whoRemoved.sendMessage(Config.getMessage("game.loose"));
-                enemy.sendMessage(Config.getMessage("game.win"));
-                GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
-            }
+        String guessStrMaterial = enemy.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+        Material guessMaterial = Material.valueOf(guessStrMaterial);
+
+        if(lastBlock.name().equals(guessMaterial.name())){
+            whoRemoved.sendMessage(Config.getMessage("game.win"));
+            enemy.sendMessage(Config.getMessage("game.loose"));
+            GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
+        }
+        else {
+            whoRemoved.sendMessage(Config.getMessage("game.loose"));
+            enemy.sendMessage(Config.getMessage("game.win"));
+            GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
         }
     }
 
@@ -170,6 +182,6 @@ public class Game {
         arena.setBlocksToFind(Material.DIAMOND_BLOCK, Material.DIAMOND_BLOCK);
 
         //update hatches
-        arena.setTrapDors();
+        arena.setTrapdoors();
     }
 }
