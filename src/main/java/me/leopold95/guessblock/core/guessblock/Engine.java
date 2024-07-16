@@ -50,6 +50,25 @@ public class Engine {
     }
 
     /**
+     * НАйти аренц на которой находится игрок
+     * @param player игрок
+     * @return арена | null
+     */
+    public Arena findPlayerArena(Player player){
+        for (Arena arena: arenas){
+            if(arena.getFirstPlayer().equals(player))
+                return arena;
+        }
+
+        for (Arena arena: arenas){
+            if(arena.getSecondPlayer().equals(player))
+                return arena;
+        }
+
+        return null;
+    }
+
+    /**
      * Инициализирует список всех доступных арен из конфига
      * @return null или список арен
      */

@@ -60,7 +60,12 @@ sounds:
   game-ended: #звук завершення гри
     name: ""
     volume: 100
-
+  block-selected: #зыук выбранного блока
+    name: ""
+    volume: 100
+  block-selecting-timer:  #зыук тиков таймера выбора блока
+    name: ""
+    volume: 100
 
 spawn-location:
   world: world

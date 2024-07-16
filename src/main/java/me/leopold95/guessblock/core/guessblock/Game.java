@@ -97,23 +97,23 @@ public class Game {
      * @param target игрок 2
      */
     public void endGame(Arena arena, Player caller, Player target){
+        if (target != null) {
+            target.sendMessage(Config.getMessage("game.end"));
+            target.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
+            target.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+            target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
+
+            teleportToSpawn(target);
+            SoundPlayer.play(target, "game-ended");
+        }
+
         caller.sendMessage(Config.getMessage("game.end"));
-        target.sendMessage(Config.getMessage("game.end"));
-
         caller.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
-        target.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
-
         caller.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
-        target.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
-
         caller.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
-        target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
 
         teleportToSpawn(caller);
-        teleportToSpawn(target);
-
         SoundPlayer.play(caller, "game-ended");
-        SoundPlayer.play(target, "game-ended");
 
         arena.setFirstPlayer(null);
         arena.setSecondPlayer(null);
@@ -154,30 +154,29 @@ public class Game {
     /**
      * Когда искомый блок был закрыт люком
      * @param arena арена
-     * @param findableBlock блок на арене, кторый нужно найти
      * @param trapdoors список открытых люков
      * @param whoRemoved игрок, который закрыд люк
      * @param enemy враг, закрывшего люк игрока
      */
-    public void onTrapdoorRemoved(Arena arena, Location findableBlock, ArrayList<Block> trapdoors, Player whoRemoved, Player enemy){
+    public void onTrapdoorClosed(Arena arena, ArrayList<Block> trapdoors, Player whoRemoved, Player enemy){
         if(trapdoors.size() != 1)
             return;
 
         Material lastBlock = trapdoors.get(0).getLocation().subtract(0, 1, 0).getBlock().getType();
-        GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlock.getBlock().getType());
+        //GuessBlock.getPlugin().getLogger().warning("last second block " + lastBlock.name() + " find " + findableBlock.getBlock().getType());
 
         String guessStrMaterial = enemy.getPersistentDataContainer().get(GuessBlock.getPlugin().keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
-        Material guessMaterial = Material.valueOf(guessStrMaterial);
+        Material blockToFind = Material.valueOf(guessStrMaterial);
 
-        if(lastBlock.name().equals(guessMaterial.name())){
+        if(lastBlock.name().equals(blockToFind.name())){
             whoRemoved.sendMessage(Config.getMessage("game.win"));
             enemy.sendMessage(Config.getMessage("game.loose"));
-            GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
+            endGame(arena, whoRemoved, enemy);
         }
         else {
             whoRemoved.sendMessage(Config.getMessage("game.loose"));
             enemy.sendMessage(Config.getMessage("game.win"));
-            GuessBlock.getPlugin().engine.getGame().endGame(arena, whoRemoved, enemy);
+            endGame(arena, whoRemoved, enemy);
         }
     }
 
@@ -207,7 +206,7 @@ public class Game {
         arena.clearBannedTrapdoors();
 
         //update fidable blocks
-        arena.updateRandomBlocks(plugin.engine.getRandomBlockList());
+        //arena.updateRandomBlocks(plugin.engine.getRandomBlockList());
 
         //update target blocks
         arena.setBlocksToFind(Material.DIAMOND_BLOCK, Material.DIAMOND_BLOCK);
@@ -215,7 +214,7 @@ public class Game {
         //update hatches
         arena.setTrapdoors();
 
-        arena.setBlocksToGuess();
+        //arena.setBlocksToGuess();
     }
 
 

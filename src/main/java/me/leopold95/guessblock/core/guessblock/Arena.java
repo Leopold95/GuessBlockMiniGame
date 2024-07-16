@@ -4,12 +4,12 @@ import customblockdata.CustomBlockData;
 import lombok.*;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
+import me.leopold95.guessblock.core.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -40,21 +40,21 @@ public class Arena {
 
     private final static String REPLACE_CONFIG_PART = "replace-location";
 
-    /**
-     * Проверяет все текущие блоки в слотах рандома, и если нету блока для отгадки -
-     * заменяет рандомный блок на этот
-     */
-    public void setBlocksToGuess(){
-        if(!firstReplaceBlocks.contains(findableBlockFirst.getBlock())){
-            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
-            firstReplaceBlocks.set(random, findableBlockFirst.getBlock());
-        }
-
-        if(!secondTrapdoorsList.contains(findableBlockSecond.getBlock())){
-            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
-            secondTrapdoorsList.set(random, findableBlockSecond.getBlock());
-        }
-    }
+//    /**
+//     * Проверяет все текущие блоки в слотах рандома, и если нету блока для отгадки -
+//     * заменяет рандомный блок на этот
+//     */
+//    public void setBlocksToGuess(){
+//        if(!firstReplaceBlocks.contains(findableBlockFirst.getBlock())){
+//            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
+//            firstReplaceBlocks.set(random, findableBlockFirst.getBlock());
+//        }
+//
+//        if(!secondTrapdoorsList.contains(findableBlockSecond.getBlock())){
+//            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
+//            secondTrapdoorsList.set(random, findableBlockSecond.getBlock());
+//        }
+//    }
 
     /**
      * Очищает списки люков
@@ -86,7 +86,7 @@ public class Arena {
      */
     public void removeFirstTrapdoor(Block trapdoor){
         firstTrapdoorsList.remove(trapdoor); //TODO убрать из коасса арены
-        GuessBlock.getPlugin().engine.getGame().onTrapdoorRemoved(this, findableBlockFirst, firstTrapdoorsList, firstPlayer, secondPlayer);
+        GuessBlock.getPlugin().engine.getGame().onTrapdoorClosed(this, firstTrapdoorsList, firstPlayer, secondPlayer);
     }
 
     /**
@@ -95,7 +95,7 @@ public class Arena {
      */
     public void removeSecondTrapdoor(Block trapdoor){
         secondTrapdoorsList.remove(trapdoor); //TODO убрать из коасса арены
-        GuessBlock.getPlugin().engine.getGame().onTrapdoorRemoved(this, findableBlockSecond, secondTrapdoorsList, secondPlayer, firstPlayer);
+        GuessBlock.getPlugin().engine.getGame().onTrapdoorClosed(this, secondTrapdoorsList, secondPlayer, firstPlayer);
     }
 
     /**
@@ -141,15 +141,26 @@ public class Arena {
      * @param second второй тип блока
      */
     public void setBlocksToFind(Material first, Material second){
+        updateRandomBlocks(GuessBlock.getPlugin().engine.getRandomBlockList());
+
         findableBlockFirst.getBlock().setType(first);
         findableBlockSecond.getBlock().setType(second);
+
+        //проверка, чтобы точно был 1 блок который нужно найти
+        if(!firstReplaceBlocks.contains(findableBlockFirst.getBlock())){;
+            firstReplaceBlocks.set(Utils.getRandomNumber(0, firstReplaceBlocks.size()), findableBlockFirst.getBlock());
+        }
+
+        if(!secondReplaceBlocks.contains(findableBlockSecond.getBlock())){
+            secondReplaceBlocks.set(Utils.getRandomNumber(0, secondReplaceBlocks.size()), findableBlockSecond.getBlock());
+        }
     }
 
     /**
      * Расставляет рандомные блоки под люки
      * @param randomList список рандомных блоков
      */
-    public void updateRandomBlocks(List<Material> randomList){
+    private void updateRandomBlocks(List<Material> randomList){
         Random random = new Random();
 
         for(Block block: firstReplaceBlocks){

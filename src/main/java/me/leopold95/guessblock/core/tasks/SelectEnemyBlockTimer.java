@@ -2,6 +2,7 @@ package me.leopold95.guessblock.core.tasks;
 
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.abstraction.RepeatingTask;
+import me.leopold95.guessblock.core.SoundPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -33,7 +34,8 @@ public class SelectEnemyBlockTimer extends RepeatingTask {
             return;
         }
 
-
+        SoundPlayer.play(caller, "block-selecting-timer");
+        SoundPlayer.play(target, "block-selecting-timer");
 
         secondsPassed++;
     }

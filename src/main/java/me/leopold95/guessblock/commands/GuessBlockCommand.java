@@ -80,10 +80,6 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
                 return onAcceptCommand(args, player);
             }
 
-//            case Commands.MG_SET_CENTER -> {
-//                return onSetCenterCommand(args, player);
-//            }
-
             case Commands.MG_SET_BLOCK_TO_GUESS -> {
                 if(!sender.hasPermission("guessblock.setblock"))
                     return false;
@@ -101,7 +97,24 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             }
 
             case Commands.MG_GIVE_UP -> {
-                plugin.engine.getGame().clearPersistence(player);
+                if(!player.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS) ||
+                !player.getPersistentDataContainer().has(plugin.keys.CURRENT_ENEMY)){
+                    player.sendMessage(Config.getMessage("commands.bad-give-up"));
+                    return true;
+                }
+
+
+                String enemyName = player.getPersistentDataContainer().get(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING);
+                Player enemy = Bukkit.getPlayer(enemyName);
+
+                if(enemy != null){
+                    enemy.sendMessage(Config.getMessage("game.win"));
+                    plugin.engine.getGame().teleportToSpawn(enemy);
+                }
+
+                player.sendMessage(Config.getMessage("game.loose"));
+
+                plugin.engine.getGame().endGame(plugin.engine.findPlayerArena(player), player, enemy);
             }
         }
 
@@ -140,6 +153,8 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
             enemy.sendActionBar(Config.getMessage("commands.game-you-has-guess-block"));
 
             player.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+
+            SoundPlayer.play(player, "block-selected");
         }
         catch (Exception exp){
             player.sendMessage(Config.getMessage("commands.bad-guess-block-type"));
