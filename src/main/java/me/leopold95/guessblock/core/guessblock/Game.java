@@ -90,6 +90,12 @@ public class Game {
 
     }
 
+    /**
+     * Заканчивает игру
+     * @param arena арена
+     * @param caller игрок 1
+     * @param target игрок 2
+     */
     public void endGame(Arena arena, Player caller, Player target){
         caller.sendMessage(Config.getMessage("game.end"));
         target.sendMessage(Config.getMessage("game.end"));
@@ -103,22 +109,47 @@ public class Game {
         caller.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
         target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
 
+        teleportToSpawn(caller);
+        teleportToSpawn(target);
+
         SoundPlayer.play(caller, "game-ended");
         SoundPlayer.play(target, "game-ended");
-
-        Location spawnLocation = new Location(
-            Bukkit.getWorld(Config.getString("spawn-location.world")),
-            Config.getDouble("spawn-location.x"),
-            Config.getDouble("spawn-location.y"),
-            Config.getDouble("spawn-location.z"));
-
-        caller.teleport(spawnLocation);
-        target.teleport(spawnLocation);
 
         arena.setFirstPlayer(null);
         arena.setSecondPlayer(null);
     }
 
+    /**
+     * Телепорт игрока на спавн
+     * @param player игрок
+     */
+    public void teleportToSpawn(Player player){
+        Location spawnLocation = new Location(
+                Bukkit.getWorld(Config.getString("spawn-location.world")),
+                Config.getDouble("spawn-location.x"),
+                Config.getDouble("spawn-location.y"),
+                Config.getDouble("spawn-location.z"));
+
+        player.teleport(spawnLocation);
+    }
+
+    /**
+     * очистака всех PDC испольхуемых для игры
+     * @param player игрок
+     */
+    public void clearPersistence(Player player){
+        if(player.getPersistentDataContainer().has(plugin.keys.BLOCK_TO_GUESS))
+            player.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
+
+        if(player.getPersistentDataContainer().has(plugin.keys.DUEL_ACCEPT_WAITING_OF))
+            player.getPersistentDataContainer().remove(plugin.keys.DUEL_ACCEPT_WAITING_OF);
+
+        if(player.getPersistentDataContainer().has(plugin.keys.SELECTING_BLOCK_TO_GUESS))
+            player.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
+
+        if(player.getPersistentDataContainer().has(plugin.keys.CURRENT_ENEMY))
+            player.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
+    }
 
     /**
      * Когда искомый блок был закрыт люком
@@ -186,4 +217,6 @@ public class Game {
 
         arena.setBlocksToGuess();
     }
+
+
 }

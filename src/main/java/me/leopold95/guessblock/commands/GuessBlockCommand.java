@@ -99,6 +99,10 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
                     sender.sendMessage(line);
                 }
             }
+
+            case Commands.MG_GIVE_UP -> {
+                plugin.engine.getGame().clearPersistence(player);
+            }
         }
 
         return false;

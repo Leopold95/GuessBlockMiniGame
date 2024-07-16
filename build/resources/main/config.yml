@@ -5,17 +5,13 @@ minigame-duel-accept-time: 120
 #час за який гравці мають обрати блоки, які їч ворогу потрібно вгадати
 time-to-select-enemy-block: 10
 
+max-game-time: 60 #seconds
+
 blocks-list:
   - STONE
   - GRASS_BLOCK
   - DIRT
   - COBBLESTONE
-  - OAK_PLANKS
-  - SPRUCE_PLANKS
-  - BIRCH_PLANKS
-  - JUNGLE_PLANKS
-  - ACACIA_PLANKS
-  - DARK_OAK_PLANKS
   - OAK_LOG
   - SPRUCE_LOG
   - BIRCH_LOG
@@ -28,12 +24,6 @@ blocks-list:
   - GOLD_ORE
   - IRON_ORE
   - COAL_ORE
-  - OAK_LEAVES
-  - SPRUCE_LEAVES
-  - BIRCH_LEAVES
-  - JUNGLE_LEAVES
-  - ACACIA_LEAVES
-  - DARK_OAK_LEAVES
   - SPONGE
   - GLASS
   - LAPIS_ORE
@@ -47,11 +37,7 @@ blocks-list:
   - SMOOTH_RED_SANDSTONE
   - NOTE_BLOCK
   - STICKY_PISTON
-  - COBWEB
-  - FERN
-  - DEAD_BUSH
   - SEAGRASS
-  - SEA_PICKLE
   - WHITE_WOOL
 
 arena-types:

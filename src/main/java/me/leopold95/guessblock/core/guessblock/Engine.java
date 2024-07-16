@@ -97,17 +97,6 @@ public class Engine {
         return plugin.engine.getArenas().stream().filter(a -> !a.isBusy()).findFirst();
     }
 
-//    public void teleportToEmptyArena(Player caller, Player target, int arenaId){
-//        Arena arena = plugin.engine.getArenas().get(arenaId);
-//        teleportToEmptyArena(caller, target, arena);
-//    }
-//
-//
-//    public void teleportToEmptyArena(Player caller, Player target, Arena arena){
-//        caller.teleport(arena.getFirstSpawn());
-//        target.teleport(arena.getSecondSpawn());
-//    }
-
     /**
      * Телепортирует игрока в центр арены
      */
