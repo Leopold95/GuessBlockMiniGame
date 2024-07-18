@@ -44,6 +44,7 @@ arena-types:
   - arena1
   - arena2
 
+
 sounds:
   duel-throw-to-target: #звук який буде у того, кому кинули дуєль
     name: ""

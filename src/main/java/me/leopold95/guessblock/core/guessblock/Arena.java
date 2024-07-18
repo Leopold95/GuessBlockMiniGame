@@ -1,6 +1,10 @@
 package me.leopold95.guessblock.core.guessblock;
 
 import customblockdata.CustomBlockData;
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
+import eu.decentsoftware.holograms.api.holograms.HologramLine;
+import eu.decentsoftware.holograms.api.holograms.HologramPage;
 import lombok.*;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
@@ -18,6 +22,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -32,30 +37,14 @@ public class Arena {
     private Location center;
     @Setter
     private boolean isBusy;
-    private ArrayList<Block> firstReplaceBlocks, secondReplaceBlocks;
+    private ArrayList<Location> firstReplaceBlocks, secondReplaceBlocks;
     private Location firstSpawn, secondSpawn;
     private ArrayList<Block> firstTrapdoorsList, secondTrapdoorsList;
+    private Location holoLocationFirst, holoLocationSecond;
     @Setter
     private Player firstPlayer, secondPlayer;
 
     private final static String REPLACE_CONFIG_PART = "replace-location";
-
-//    /**
-//     * Проверяет все текущие блоки в слотах рандома, и если нету блока для отгадки -
-//     * заменяет рандомный блок на этот
-//     */
-//    public void setBlocksToGuess(){
-//        if(!firstReplaceBlocks.contains(findableBlockFirst.getBlock())){
-//            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
-//            firstReplaceBlocks.set(random, findableBlockFirst.getBlock());
-//        }
-//
-//        if(!secondTrapdoorsList.contains(findableBlockSecond.getBlock())){
-//            int random = new Random().nextInt(0, firstReplaceBlocks.size() - 1);
-//            secondTrapdoorsList.set(random, findableBlockSecond.getBlock());
-//        }
-//    }
-
     /**
      * Очищает списки люков
      */
@@ -102,8 +91,8 @@ public class Arena {
      * Устанавливает люки над блоками для отгадки
      */
     public void setTrapdoors(){
-        for(Block block: firstReplaceBlocks){
-            Location trapDoorLocation = block.getLocation().clone().add(0, 1, 0);
+        for(Location block: firstReplaceBlocks){
+            Location trapDoorLocation = block.clone().add(0, 1, 0);
 
             firstTrapdoorsList.add(trapDoorLocation.getBlock());
 
@@ -118,8 +107,8 @@ public class Arena {
             data.set(GuessBlock.getPlugin().keys.CAN_CLOSE_FIST_TRAPDOOR, PersistentDataType.BOOLEAN, true);
         }
 
-        for(Block block: secondReplaceBlocks){
-            Location trapDoorLocation = block.getLocation().clone().add(0, 1, 0);
+        for(Location block: secondReplaceBlocks){
+            Location trapDoorLocation = block.clone().add(0, 1, 0);
 
             secondTrapdoorsList.add(trapDoorLocation.getBlock());
 
@@ -135,6 +124,11 @@ public class Arena {
         }
     }
 
+    public void updateHolo(){
+        Hologram holo1 = DHAPI.getHologram(name + "first");
+        Hologram holo2 = DHAPI.getHologram(name + "second");
+    }
+
     /**
      * Устанавливает блоки, которые необходимо отгадать
      * @param first первый тип блока
@@ -146,13 +140,54 @@ public class Arena {
         findableBlockFirst.getBlock().setType(first);
         findableBlockSecond.getBlock().setType(second);
 
-        //проверка, чтобы точно был 1 блок который нужно найти
-        if(!firstReplaceBlocks.contains(findableBlockFirst.getBlock())){;
-            firstReplaceBlocks.set(Utils.getRandomNumber(0, firstReplaceBlocks.size()), findableBlockFirst.getBlock());
+        if(DHAPI.getHologram(name + "first") != null){
+            DHAPI.removeHologram(name + "first");
         }
 
-        if(!secondReplaceBlocks.contains(findableBlockSecond.getBlock())){
-            secondReplaceBlocks.set(Utils.getRandomNumber(0, secondReplaceBlocks.size()), findableBlockSecond.getBlock());
+        if(DHAPI.getHologram(name + "second") != null){
+            DHAPI.removeHologram(name + "second");
+        }
+
+        Hologram holo1 =  DHAPI.createHologram(name + "first", holoLocationFirst);
+        DHAPI.setHologramLines(holo1, Config.getMessageList("hologram.text"));
+
+        Hologram holo2 =  DHAPI.createHologram(name + "second", holoLocationSecond);
+        DHAPI.setHologramLines(holo2, Config.getMessageList("hologram.text"));
+    }
+
+    public void checkGuessBlocks(){
+        Material m1 = findableBlockFirst.getBlock().getType();
+        Material m2 = findableBlockSecond.getBlock().getType();
+
+        boolean f1 = firstReplaceBlocks.stream().map(Location::getBlock).map(Block::getType).anyMatch(m -> m.equals(m1));
+        boolean f2 = secondReplaceBlocks.stream().map(Location::getBlock).map(Block::getType).anyMatch(m -> m.equals(m2));
+
+        GuessBlock.getPlugin().getLogger().warning(String.valueOf(f1) + " - " + String.valueOf(f2));
+
+        if(!f1){
+            int index = Utils.getRandomNumber(0, firstReplaceBlocks.size());
+
+            //Material m1F =  firstReplaceBlocks.get(index).getBlock().getType();
+
+            Location b = firstReplaceBlocks.get(index);
+            b.getBlock().setType(m1);
+
+            firstReplaceBlocks.get(index).getBlock().setType(m1);
+            firstReplaceBlocks.set(index, b.getBlock().getLocation());
+
+            //GuessBlock.getPlugin().getLogger().warning(m1F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() + " " +b.getBlockZ());
+        }
+
+        if(!f2){
+            int index = Utils.getRandomNumber(0, secondReplaceBlocks.size());
+            //Material m2F =  secondReplaceBlocks.get(index).getBlock().getType();
+
+            Location b = secondReplaceBlocks.get(index);
+            b.getBlock().setType(m2);
+
+            secondReplaceBlocks.get(index).getBlock().setType(m2);
+            secondReplaceBlocks.set(index, b.getBlock().getLocation());
+            //GuessBlock.getPlugin().getLogger().warning(m2F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() +  " " +b.getBlockZ() );
         }
     }
 
@@ -163,16 +198,16 @@ public class Arena {
     private void updateRandomBlocks(List<Material> randomList){
         Random random = new Random();
 
-        for(Block block: firstReplaceBlocks){
+        for(Location location: firstReplaceBlocks){
             int randomMaterialId = random.nextInt(0, randomList.size());
             Material randomMaterial = randomList.get(randomMaterialId);
-            block.setType(randomMaterial);
+            location.getBlock().setType(randomMaterial);
         }
 
-        for(Block block: secondReplaceBlocks){
+        for(Location location: secondReplaceBlocks){
             int randomMaterialId = random.nextInt(0, randomList.size());
             Material randomMaterial = randomList.get(randomMaterialId);
-            block.setType(randomMaterial);
+            location.getBlock().setType(randomMaterial);
         }
     }
 
@@ -229,6 +264,16 @@ public class Arena {
                         Config.getArenasConfig().getDouble(configPart + ".spawn.second.z")),
                 new ArrayList<>(),
                 new ArrayList<>(),
+                new Location(
+                        Bukkit.getWorld(Config.getString("arenas-world")),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.first.x"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.first.y"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.first.z")),
+                new Location(
+                        Bukkit.getWorld(Config.getString("arenas-world")),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.second.x"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.second.y"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.second.z")),
                 null,
                 null
         );
@@ -238,9 +283,8 @@ public class Arena {
      * Генерирует список позиций блоков, которые нужно заменить
      * @return null иил список позиуий блоков, которые нужно заменить
      */
-    private static ArrayList<Block> loadReplaceBlocks(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
-        ArrayList<Block> list = new ArrayList<>();
-
+    private static ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
+        ArrayList<Location> list = new ArrayList<>();
         Location blocksHeight = arenaCenter.clone().add(0, replaceHeight, 0);
 
         ConfigurationSection partSection = Config.getSection(REPLACE_CONFIG_PART);
@@ -267,7 +311,7 @@ public class Arena {
                     double x = Double.parseDouble(p[0]);
                     double z = Double.parseDouble(p[1]);
 
-                    list.add(blocksHeight.clone().add(x, 0, z).getBlock());
+                    list.add(blocksHeight.clone().add(x, 0, z));
                 }
                 catch (Exception exp){
                     plugin.getLogger().warning("Cant parse replace location '"+ arenaName+"': " + exp.getMessage());

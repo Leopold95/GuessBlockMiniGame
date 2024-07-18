@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'me.leopold95'
-version = '0.1-BETA'
+version = '1.1-RELEASE'
 
 repositories {
     mavenCentral()
@@ -15,14 +15,24 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+
+    //Decent holograms
+    maven {
+        name = "jitpack"
+        url = "https://jitpack.io/"
+    }
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
 
+
     //lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    //decent holograms
+    compileOnly 'com.github.decentsoftware-eu:decentholograms:2.8.9'
 }
 
 def targetJavaVersion = 17

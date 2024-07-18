@@ -3,7 +3,9 @@ package me.leopold95.guessblock.core.guessblock;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.SoundPlayer;
+import me.leopold95.guessblock.core.tasks.GlobalTimerTask;
 import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
+import me.leopold95.guessblock.enums.DuelResult;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Game {
     private GuessBlock plugin;
@@ -58,13 +61,13 @@ public class Game {
         long seleBlockTime = Config.getLong("time-to-select-enemy-block");
         new SelectEnemyBlockTimer(plugin, 20, seleBlockTime, caller, target);
 
+        int masGameDuration = Config.getInt("max-game-time");
+        new GlobalTimerTask(plugin, arena, masGameDuration);
+
         //провека, что обы игрока выбрали блок для угадайки
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if(!hasBothPlayersSelectedBlocks(caller, target)){
-                caller.sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
-                target.sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
-
-                endGame(arena, caller, target);
+                endGame(arena, caller, target, DuelResult.GB_WASNT_SELECTED);
                 return;
             }
 
@@ -79,6 +82,8 @@ public class Game {
 
             arena.setFirstGuessBlock(Material.getMaterial(callerBlock));
             arena.setSecondGuessBlock(Material.getMaterial(targetBlock));
+
+            arena.checkGuessBlocks();
 
             caller.sendMessage(Config.getMessage("game.start"));
             target.sendMessage(Config.getMessage("game.start"));
@@ -96,7 +101,32 @@ public class Game {
      * @param caller игрок 1
      * @param target игрок 2
      */
-    public void endGame(Arena arena, Player caller, Player target){
+    public void endGame(Arena arena, Player caller, Player target, DuelResult result){
+
+        switch (result){
+            case FIRST_WIN, GIVEUP_SECOND -> {
+                caller.sendMessage(Config.getMessage("game.win"));
+                Objects.requireNonNull(target).sendMessage(Config.getMessage("game.loose"));
+            }
+            case SECOND_WIN, GIVEUP_FIRST -> {
+                caller.sendMessage(Config.getMessage("game.loose"));
+                Objects.requireNonNull(target).sendMessage(Config.getMessage("game.win"));
+            }
+            case NON_WIN -> {
+                caller.sendMessage(Config.getMessage("game.non-win"));
+                Objects.requireNonNull(target).sendMessage(Config.getMessage("game.non-win"));
+            }
+            case TIMER -> {
+                caller.sendMessage(Config.getMessage("game.timer"));
+                Objects.requireNonNull(target).sendMessage(Config.getMessage("game.timer"));
+            }
+            case GB_WASNT_SELECTED -> {
+                caller.sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
+                Objects.requireNonNull(target).sendMessage(Config.getMessage("game.end-guess-block-didnt-select"));
+            }
+        }
+
+
         if (target != null) {
             target.sendMessage(Config.getMessage("game.end"));
             target.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
@@ -169,14 +199,14 @@ public class Game {
         Material blockToFind = Material.valueOf(guessStrMaterial);
 
         if(lastBlock.name().equals(blockToFind.name())){
-            whoRemoved.sendMessage(Config.getMessage("game.win"));
-            enemy.sendMessage(Config.getMessage("game.loose"));
-            endGame(arena, whoRemoved, enemy);
+//            whoRemoved.sendMessage(Config.getMessage("game.win"));
+//            enemy.sendMessage(Config.getMessage("game.loose"));
+            endGame(arena, whoRemoved, enemy, DuelResult.FIRST_WIN);
         }
         else {
-            whoRemoved.sendMessage(Config.getMessage("game.loose"));
-            enemy.sendMessage(Config.getMessage("game.win"));
-            endGame(arena, whoRemoved, enemy);
+//            whoRemoved.sendMessage(Config.getMessage("game.loose"));
+//            enemy.sendMessage(Config.getMessage("game.win"));
+            endGame(arena, whoRemoved, enemy, DuelResult.SECOND_WIN);
         }
     }
 

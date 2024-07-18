@@ -32,8 +32,8 @@ public final class GuessBlock extends JavaPlugin {
         getCommand(Commands.MG).setExecutor(new GuessBlockCommand(this));
         getCommand(Commands.MG).setTabCompleter(new GuessBlockCommand(this));
 
-        getCommand(Commands.MG_TESTING).setExecutor(new GuessBlockTesting(this));
-        getCommand(Commands.MG_TESTING).setTabCompleter(new GuessBlockTesting(this));
+        //getCommand(Commands.MG_TESTING).setExecutor(new GuessBlockTesting(this));
+        //getCommand(Commands.MG_TESTING).setTabCompleter(new GuessBlockTesting(this));
 
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new LeaveListener(), this);

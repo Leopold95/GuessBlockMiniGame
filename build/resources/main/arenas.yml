@@ -3,6 +3,17 @@ arenas:
     name: A1
     type: arena1
     replace-blocks-height: -5
+    holo:
+      first:
+        location:
+          x: 0
+          y: 0
+          z: 0
+      second:
+        location:
+          x: 0
+          y: 0
+          z: 0
     enemy-block-loc_1:
       x: 0
       y: -34

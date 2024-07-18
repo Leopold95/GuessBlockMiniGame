@@ -50,7 +50,7 @@ public class GuessBlockTesting implements CommandExecutor, TabCompleter {
 
             Arena arena = plugin.engine.getArenas().get(Integer.parseInt(args[1]));
 
-            arena.updateRandomBlocks(plugin.engine.getRandomBlockList());
+            //arena.updateRandomBlocks(plugin.engine.getRandomBlockList());
         }
 
         if(args[0].equals(Commands.MG_TESTING_TP_TO_ARENA)){
