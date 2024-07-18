@@ -3,6 +3,7 @@ package me.leopold95.guessblock.core.guessblock;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.SoundPlayer;
+import me.leopold95.guessblock.core.tasks.GameTickerTask;
 import me.leopold95.guessblock.core.tasks.GlobalTimerTask;
 import me.leopold95.guessblock.core.tasks.SelectEnemyBlockTimer;
 import me.leopold95.guessblock.enums.DuelResult;
@@ -63,6 +64,8 @@ public class Game {
 
         int masGameDuration = Config.getInt("max-game-time");
         new GlobalTimerTask(plugin, arena, masGameDuration);
+
+        new GameTickerTask(plugin, masGameDuration, arena);
 
         //провека, что обы игрока выбрали блок для угадайки
         Bukkit.getScheduler().runTaskLater(plugin, () -> {

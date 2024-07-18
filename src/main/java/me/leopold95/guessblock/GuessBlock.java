@@ -2,7 +2,6 @@ package me.leopold95.guessblock;
 
 import lombok.Getter;
 import me.leopold95.guessblock.commands.GuessBlockCommand;
-import me.leopold95.guessblock.commands.GuessBlockTesting;
 import me.leopold95.guessblock.core.Config;
 import me.leopold95.guessblock.core.Keys;
 import me.leopold95.guessblock.core.guessblock.Engine;

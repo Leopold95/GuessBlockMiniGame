@@ -5,6 +5,7 @@ import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import eu.decentsoftware.holograms.api.holograms.HologramLine;
 import eu.decentsoftware.holograms.api.holograms.HologramPage;
+import eu.decentsoftware.holograms.api.utils.scheduler.S;
 import lombok.*;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
@@ -124,9 +125,17 @@ public class Arena {
         }
     }
 
-    public void updateHolo(){
+    public void updateHolo(int timeLeft){
         Hologram holo1 = DHAPI.getHologram(name + "first");
         Hologram holo2 = DHAPI.getHologram(name + "second");
+
+        if(holo1 != null){
+            DHAPI.setHologramLines(holo1, parseHoloLines(timeLeft));
+        }
+
+        if(holo2 != null){
+            DHAPI.setHologramLines(holo2, parseHoloLines(timeLeft));
+        }
     }
 
     /**
@@ -148,44 +157,44 @@ public class Arena {
             DHAPI.removeHologram(name + "second");
         }
 
-        Hologram holo1 =  DHAPI.createHologram(name + "first", holoLocationFirst);
-        DHAPI.setHologramLines(holo1, Config.getMessageList("hologram.text"));
+        GuessBlock.getPlugin().getLogger().warning(holoLocationFirst.toString());
+        GuessBlock.getPlugin().getLogger().warning(holoLocationSecond.toString());
 
-        Hologram holo2 =  DHAPI.createHologram(name + "second", holoLocationSecond);
-        DHAPI.setHologramLines(holo2, Config.getMessageList("hologram.text"));
+        DHAPI.createHologram(name + "first", holoLocationFirst,  parseHoloLines(0));
+        DHAPI.createHologram(name + "second", holoLocationSecond,  parseHoloLines(0));
     }
 
     public void checkGuessBlocks(){
-        Material m1 = findableBlockFirst.getBlock().getType();
-        Material m2 = findableBlockSecond.getBlock().getType();
+        Material firstFindMaterial = findableBlockFirst.getBlock().getType();
+        Material secondFindMaterial = findableBlockSecond.getBlock().getType();
 
-        boolean f1 = firstReplaceBlocks.stream().map(Location::getBlock).map(Block::getType).anyMatch(m -> m.equals(m1));
-        boolean f2 = secondReplaceBlocks.stream().map(Location::getBlock).map(Block::getType).anyMatch(m -> m.equals(m2));
+        boolean isFirstContainsMaterial = firstReplaceBlocks.stream().map(Location::getBlock).map(Block::getType).anyMatch(m -> m.equals(firstFindMaterial));
+        boolean isSecondContainsMaterial = secondReplaceBlocks.stream().map(Location::getBlock).map(Block::getType).anyMatch(m -> m.equals(secondFindMaterial));
 
-        GuessBlock.getPlugin().getLogger().warning(String.valueOf(f1) + " - " + String.valueOf(f2));
+        //GuessBlock.getPlugin().getLogger().warning(String.valueOf(isFirstContainsMaterial) + " - " + String.valueOf(isSecondContainsMaterial));
 
-        if(!f1){
+        if(!isFirstContainsMaterial){
             int index = Utils.getRandomNumber(0, firstReplaceBlocks.size());
 
             //Material m1F =  firstReplaceBlocks.get(index).getBlock().getType();
 
             Location b = firstReplaceBlocks.get(index);
-            b.getBlock().setType(m1);
+            b.getBlock().setType(firstFindMaterial);
 
-            firstReplaceBlocks.get(index).getBlock().setType(m1);
+            firstReplaceBlocks.get(index).getBlock().setType(firstFindMaterial);
             firstReplaceBlocks.set(index, b.getBlock().getLocation());
 
             //GuessBlock.getPlugin().getLogger().warning(m1F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() + " " +b.getBlockZ());
         }
 
-        if(!f2){
+        if(!isSecondContainsMaterial){
             int index = Utils.getRandomNumber(0, secondReplaceBlocks.size());
             //Material m2F =  secondReplaceBlocks.get(index).getBlock().getType();
 
             Location b = secondReplaceBlocks.get(index);
-            b.getBlock().setType(m2);
+            b.getBlock().setType(secondFindMaterial);
 
-            secondReplaceBlocks.get(index).getBlock().setType(m2);
+            secondReplaceBlocks.get(index).getBlock().setType(secondFindMaterial);
             secondReplaceBlocks.set(index, b.getBlock().getLocation());
             //GuessBlock.getPlugin().getLogger().warning(m2F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() +  " " +b.getBlockZ() );
         }
@@ -266,14 +275,14 @@ public class Arena {
                 new ArrayList<>(),
                 new Location(
                         Bukkit.getWorld(Config.getString("arenas-world")),
-                        Config.getArenasConfig().getDouble(configPart + ".holo.first.x"),
-                        Config.getArenasConfig().getDouble(configPart + ".holo.first.y"),
-                        Config.getArenasConfig().getDouble(configPart + ".holo.first.z")),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.first.location.x"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.first.location.y"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.first.location.z")),
                 new Location(
                         Bukkit.getWorld(Config.getString("arenas-world")),
-                        Config.getArenasConfig().getDouble(configPart + ".holo.second.x"),
-                        Config.getArenasConfig().getDouble(configPart + ".holo.second.y"),
-                        Config.getArenasConfig().getDouble(configPart + ".holo.second.z")),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.second.location.x"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.second.location.y"),
+                        Config.getArenasConfig().getDouble(configPart + ".holo.second.location.z")),
                 null,
                 null
         );
@@ -320,5 +329,16 @@ public class Arena {
         }
 
         return list;
+    }
+
+    private List<String> parseHoloLines(int timeLeft){
+        List<String> lines = Config.getMessageList("hologram.text");
+        List<String> newLines = new ArrayList<>();
+
+        for(String line: lines){
+            newLines.add(line.replace("%time%", String.valueOf(timeLeft)));
+        }
+
+        return newLines;
     }
 }
