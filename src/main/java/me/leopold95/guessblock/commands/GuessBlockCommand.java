@@ -261,7 +261,7 @@ public class GuessBlockCommand implements TabCompleter, CommandExecutor {
         }
 
         SoundPlayer.play(caller, "duel-accept-to-caller");
-        Bukkit.getScheduler().runTask(plugin, () -> plugin.engine.getGame().startGame(caller, target, optArena.get()));
+        Bukkit.getScheduler().runTask(plugin, () -> plugin.engine.getGame().prepareGame(caller, target, optArena.get()));
 
         return true;
     }

@@ -22,8 +22,8 @@ public class GlobalTimerTask extends LateTask {
 
     @Override
     public void run() {
-        if(arena.getSecondPlayer() != null && arena.getSecondPlayer() != null) {
-            plugin.engine.getGame().endGame(arena, arena.getFirstPlayer(), arena.getSecondPlayer(), DuelResult.TIMER);
-        }
+//        if(arena.getSecondPlayer() != null && arena.getSecondPlayer() != null) {
+//            plugin.engine.getGame().endGame(arena, arena.getFirstPlayer(), arena.getSecondPlayer(), DuelResult.TIMER);
+//        }
     }
 }

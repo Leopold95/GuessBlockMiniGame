@@ -22,7 +22,8 @@ import java.util.Objects;
 public class Game {
     private GuessBlock plugin;
 
-    private PotionEffect blindness = new PotionEffect(PotionEffectType.BLINDNESS, 99999, 1);
+    private final int maxSelectBlockSeconds = Config.getInt("time-to-select-enemy-block");
+    private PotionEffect blindness = new PotionEffect(PotionEffectType.BLINDNESS, maxSelectBlockSeconds * 20, 1);
 
     public Game(GuessBlock plugin){
         this.plugin = plugin;
@@ -34,7 +35,7 @@ public class Game {
      * @param target ответчик на игру
      * @param arena арена игры
      */
-    public void startGame(Player caller, Player target, Arena arena){
+    public void prepareGame(Player caller, Player target, Arena arena){
         updateCurrentArena(arena);
 
         caller.getPersistentDataContainer().set(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING, target.getName());
@@ -59,43 +60,47 @@ public class Game {
         target.addPotionEffect(blindness);
 
         //таймер ожидания выбора блоков для угадайки
-        long seleBlockTime = Config.getLong("time-to-select-enemy-block");
-        new SelectEnemyBlockTimer(plugin, 20, seleBlockTime, caller, target);
+        //long seleBlockTime = Config.getLong("time-to-select-enemy-block");
+        //new SelectEnemyBlockTimer(plugin, 20, seleBlockTime, caller, target);
 
-        int masGameDuration = Config.getInt("max-game-time");
-        new GlobalTimerTask(plugin, arena, masGameDuration);
+        //int masGameDuration = Config.getInt("max-game-time");
+        //new GlobalTimerTask(plugin, arena, masGameDuration);
 
-        new GameTickerTask(plugin, masGameDuration, arena);
+        new GameTickerTask(plugin, arena, caller, target);
 
-        //провека, что обы игрока выбрали блок для угадайки
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if(!hasBothPlayersSelectedBlocks(caller, target)){
-                endGame(arena, caller, target, DuelResult.GB_WASNT_SELECTED);
-                return;
-            }
+//        //провека, что обы игрока выбрали блок для угадайки
+//        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+//            if(!hasBothPlayersSelectedBlocks(caller, target)){
+//                endGame(arena, caller, target, DuelResult.GB_WASNT_SELECTED);
+//                return;
+//            }
+//
+//
+//
+//        }, seleBlockTime * 20 + 2);
 
-            arena.setFirstPlayer(caller);
-            arena.setSecondPlayer(target);
+    }
 
-            caller.removePotionEffect(PotionEffectType.BLINDNESS);
-            target.removePotionEffect(PotionEffectType.BLINDNESS);
+    public void startGame(Arena arena, Player caller, Player target){
+        arena.setFirstPlayer(caller);
+        arena.setSecondPlayer(target);
 
-            String callerBlock = caller.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
-            String targetBlock = target.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+        caller.removePotionEffect(PotionEffectType.BLINDNESS);
+        target.removePotionEffect(PotionEffectType.BLINDNESS);
 
-            arena.setFirstGuessBlock(Material.getMaterial(callerBlock));
-            arena.setSecondGuessBlock(Material.getMaterial(targetBlock));
+        String callerBlock = caller.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
+        String targetBlock = target.getPersistentDataContainer().get(plugin.keys.BLOCK_TO_GUESS, PersistentDataType.STRING);
 
-            arena.checkGuessBlocks();
+        arena.setFirstGuessBlock(Material.getMaterial(callerBlock));
+        arena.setSecondGuessBlock(Material.getMaterial(targetBlock));
 
-            caller.sendMessage(Config.getMessage("game.start"));
-            target.sendMessage(Config.getMessage("game.start"));
+        arena.checkGuessBlocks();
 
-            SoundPlayer.play(caller, "game-started");
-            SoundPlayer.play(target, "game-started");
+        caller.sendMessage(Config.getMessage("game.start"));
+        target.sendMessage(Config.getMessage("game.start"));
 
-        }, seleBlockTime * 20 + 2);
-
+        SoundPlayer.play(caller, "game-started");
+        SoundPlayer.play(target, "game-started");
     }
 
     /**
@@ -131,7 +136,7 @@ public class Game {
 
 
         if (target != null) {
-            target.sendMessage(Config.getMessage("game.end"));
+            //target.sendMessage(Config.getMessage("game.end"));
             target.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
             target.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
             target.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
@@ -140,7 +145,7 @@ public class Game {
             SoundPlayer.play(target, "game-ended");
         }
 
-        caller.sendMessage(Config.getMessage("game.end"));
+        //caller.sendMessage(Config.getMessage("game.end"));
         caller.getPersistentDataContainer().remove(plugin.keys.CURRENT_ENEMY);
         caller.getPersistentDataContainer().remove(plugin.keys.SELECTING_BLOCK_TO_GUESS);
         caller.getPersistentDataContainer().remove(plugin.keys.BLOCK_TO_GUESS);
@@ -150,6 +155,9 @@ public class Game {
 
         arena.setFirstPlayer(null);
         arena.setSecondPlayer(null);
+
+        caller.removePotionEffect(PotionEffectType.BLINDNESS);
+        target.removePotionEffect(PotionEffectType.BLINDNESS);
     }
 
     /**

@@ -1,5 +1,5 @@
 name: GuessBlockMiniGame
-version: '1.2-RELEASE'
+version: '1.3'
 main: me.leopold95.guessblock.GuessBlock
 api-version: '1.20'
 authors: [Leopold95]
@@ -11,17 +11,10 @@ depend:
 commands:
   minigame:
     description: Команда міні гры "Відгадай блок"
-    permission: guessblock.*
-    permission-message: "У вас нет прав на использования этой команды"
     aliases:
       - mg
       - guessblock
       - gb
-
-  minigame_testing:
-    description: команды тестирования мимигры
-    permission: guessblock.minigame.testing
-    permission-message: "У вас нет прав на использования этой команды"
 
 permissions:
   guessblock.*:
