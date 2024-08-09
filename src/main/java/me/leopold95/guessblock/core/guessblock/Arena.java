@@ -3,9 +3,6 @@ package me.leopold95.guessblock.core.guessblock;
 import customblockdata.CustomBlockData;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
-import eu.decentsoftware.holograms.api.holograms.HologramLine;
-import eu.decentsoftware.holograms.api.holograms.HologramPage;
-import eu.decentsoftware.holograms.api.utils.scheduler.S;
 import lombok.*;
 import me.leopold95.guessblock.GuessBlock;
 import me.leopold95.guessblock.core.Config;
@@ -23,7 +20,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -144,8 +140,6 @@ public class Arena {
      * @param second второй тип блока
      */
     public void setBlocksToFind(Material first, Material second){
-        updateRandomBlocks(GuessBlock.getPlugin().engine.getRandomBlockList());
-
         findableBlockFirst.getBlock().setType(first);
         findableBlockSecond.getBlock().setType(second);
 
@@ -176,7 +170,7 @@ public class Arena {
         if(!isFirstContainsMaterial){
             int index = Utils.getRandomNumber(0, firstReplaceBlocks.size());
 
-            //Material m1F =  firstReplaceBlocks.get(index).getBlock().getType();
+            Material m1F =  firstReplaceBlocks.get(index).getBlock().getType();
 
             Location b = firstReplaceBlocks.get(index);
             b.getBlock().setType(firstFindMaterial);
@@ -184,40 +178,73 @@ public class Arena {
             firstReplaceBlocks.get(index).getBlock().setType(firstFindMaterial);
             firstReplaceBlocks.set(index, b.getBlock().getLocation());
 
-            //GuessBlock.getPlugin().getLogger().warning(m1F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() + " " +b.getBlockZ());
+            GuessBlock.getPlugin().getLogger().warning(m1F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() + " " +b.getBlockZ());
         }
 
         if(!isSecondContainsMaterial){
             int index = Utils.getRandomNumber(0, secondReplaceBlocks.size());
-            //Material m2F =  secondReplaceBlocks.get(index).getBlock().getType();
+            Material m2F =  secondReplaceBlocks.get(index).getBlock().getType();
 
             Location b = secondReplaceBlocks.get(index);
             b.getBlock().setType(secondFindMaterial);
 
             secondReplaceBlocks.get(index).getBlock().setType(secondFindMaterial);
             secondReplaceBlocks.set(index, b.getBlock().getLocation());
-            //GuessBlock.getPlugin().getLogger().warning(m2F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() +  " " +b.getBlockZ() );
+            GuessBlock.getPlugin().getLogger().warning(m2F.name() + " " + index + " " + b.getBlockX() + " " + b.getBlockY() +  " " +b.getBlockZ() );
         }
     }
 
     /**
      * Расставляет рандомные блоки под люки
-     * @param randomList список рандомных блоков
      */
-    private void updateRandomBlocks(List<Material> randomList){
+    public void updateRandomBlocks(){
+        List<Material> randomMaterials = GuessBlock.getPlugin().engine.getRandomBlockList();
+
         Random random = new Random();
 
-        for(Location location: firstReplaceBlocks){
-            int randomMaterialId = random.nextInt(0, randomList.size());
-            Material randomMaterial = randomList.get(randomMaterialId);
-            location.getBlock().setType(randomMaterial);
+
+        if(firstReplaceBlocks.size() != secondReplaceBlocks.size()){
+            String message = Config.getMessage("bad-arena-replace-blocks")
+                    .replace("%name%", name);
+            GuessBlock.getPlugin().getLogger().warning(message);
+            GuessBlock.getPlugin().getServer().getPluginManager().disablePlugin(GuessBlock.getPlugin());
+            return;
         }
 
-        for(Location location: secondReplaceBlocks){
-            int randomMaterialId = random.nextInt(0, randomList.size());
-            Material randomMaterial = randomList.get(randomMaterialId);
-            location.getBlock().setType(randomMaterial);
+        //Генерация списка с рандомными материалами
+        List<Material> selectedMaterials = new ArrayList<>();
+        for(Location l: firstReplaceBlocks){
+            int randomMaterialId = random.nextInt(0, randomMaterials.size());
+            Material randomMaterial = randomMaterials.get(randomMaterialId);
+
+            if (selectedMaterials.contains(randomMaterial)) {
+                int randomMaterialId2 = random.nextInt(0, randomMaterials.size());
+                Material randomMaterial2 = randomMaterials.get(randomMaterialId2);
+                selectedMaterials.add(randomMaterial2);
+                return;
+            }
+
+            selectedMaterials.add(randomMaterial);
         }
+
+        //Заполение списка блоков рандомными
+        for(int i = 0; i <= firstReplaceBlocks.size() - 1; i++){
+            Material mat = selectedMaterials.get(i);
+            firstReplaceBlocks.get(i).getBlock().setType(mat);
+            secondReplaceBlocks.get(i).getBlock().setType(mat);
+        }
+
+//        for(Location location: firstReplaceBlocks){
+//            int randomMaterialId = random.nextInt(0, randomMaterials.size());
+//            Material randomMaterial = randomMaterials.get(randomMaterialId);
+//            location.getBlock().setType(randomMaterial);
+//        }
+//
+//        for(Location location: secondReplaceBlocks){
+//            int randomMaterialId = random.nextInt(0, randomMaterials.size());
+//            Material randomMaterial = randomMaterials.get(randomMaterialId);
+//            location.getBlock().setType(randomMaterial);
+//        }
     }
 
     /**
@@ -259,8 +286,8 @@ public class Arena {
                         Config.getArenasConfig().getDouble(configPart + ".enemy-block-loc_2.z")),
                 center,
                 false,
-                loadReplaceBlocks(center, ".replace-list.first", replaceHeight, plugin, name, type),
-                loadReplaceBlocks(center, ".replace-list.second", replaceHeight, plugin, name, type),
+                getReplaceBlocksLocations(center, ".replace-list.first", replaceHeight, plugin, name, type),
+                getReplaceBlocksLocations(center, ".replace-list.second", replaceHeight, plugin, name, type),
                 new Location(
                         Bukkit.getWorld(Config.getString("arenas-world")),
                         Config.getArenasConfig().getDouble(configPart + ".spawn.first.x"),
@@ -292,7 +319,7 @@ public class Arena {
      * Генерирует список позиций блоков, которые нужно заменить
      * @return null иил список позиуий блоков, которые нужно заменить
      */
-    private static ArrayList<Location> loadReplaceBlocks(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
+    private static ArrayList<Location> getReplaceBlocksLocations(Location arenaCenter, String partInCfg, int replaceHeight, GuessBlock plugin, String arenaName, String arenaType){
         ArrayList<Location> list = new ArrayList<>();
         Location blocksHeight = arenaCenter.clone().add(0, replaceHeight, 0);
 

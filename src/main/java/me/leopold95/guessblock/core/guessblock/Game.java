@@ -38,6 +38,9 @@ public class Game {
     public void prepareGame(Player caller, Player target, Arena arena){
         updateCurrentArena(arena);
 
+        arena.setFirstPlayer(caller);
+        arena.setSecondPlayer(target);
+
         caller.getPersistentDataContainer().set(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING, target.getName());
         target.getPersistentDataContainer().set(plugin.keys.CURRENT_ENEMY, PersistentDataType.STRING, caller.getName());
 
@@ -82,9 +85,6 @@ public class Game {
     }
 
     public void startGame(Arena arena, Player caller, Player target){
-        arena.setFirstPlayer(caller);
-        arena.setSecondPlayer(target);
-
         caller.removePotionEffect(PotionEffectType.BLINDNESS);
         target.removePotionEffect(PotionEffectType.BLINDNESS);
 
@@ -110,7 +110,6 @@ public class Game {
      * @param target игрок 2
      */
     public void endGame(Arena arena, Player caller, Player target, DuelResult result){
-
         switch (result){
             case FIRST_WIN, GIVEUP_SECOND -> {
                 caller.sendMessage(Config.getMessage("game.win"));
@@ -249,6 +248,8 @@ public class Game {
         //update fidable blocks
         //arena.updateRandomBlocks(plugin.engine.getRandomBlockList());
 
+
+        arena.updateRandomBlocks();
         //update target blocks
         arena.setBlocksToFind(Material.DIAMOND_BLOCK, Material.DIAMOND_BLOCK);
 
